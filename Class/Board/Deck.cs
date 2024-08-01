@@ -1,27 +1,49 @@
+using GameAutoChess.Interface;
+
 namespace GameAutoChess.Class.Board;
 using GameAutoChess.Class.ChessPiece;
 
-public class Deck
+public class Deck : IDeck
 {
-    public List<ChessPiece> ChessPieces { get; set; }
+    public int IdDeck { get; }
+    public int MaxSlotPiece { get; }
+    public List<IChessPiece> ChessPieces { get; set; }
+    public PlayerData DataPlayer { get; set; }
 
-    public Deck()
+    public Deck(int idDeck, int maxSlotPiece, List<IChessPiece> chessPieces)
     {
-        ChessPieces = new List<ChessPiece>();
+        IdDeck = idDeck;
+        MaxSlotPiece = maxSlotPiece;
+        ChessPieces = chessPieces;
     }
 
-    public void AddPieceFromStore(ChessPiece chessPiece)
+    public bool IsDeckFull()
     {
-        ChessPieces.Add(chessPiece);
+        if(ChessPieces.Count == MaxSlotPiece)
+        {
+            return true;
+        }
+
+        return false;
     }
 
-    public void SellChessPiece(ChessPiece chessPiece)
+    public bool AddPieceFromStore(IChessPiece chessPiece)
     {
-        ChessPieces.Remove(chessPiece);
+        if (chessPiece != null)
+        {
+            ChessPieces.Add(chessPiece);
+            return true;
+        }
+        return false;
     }
 
-    public List<ChessPiece> GetChessPieces()
+    public bool SellPieceFromDeck(IChessPiece chessPiece)
     {
-        return ChessPieces;
+        if (ChessPieces.Contains(chessPiece))
+        {
+            ChessPieces.Remove(chessPiece);
+            return true;
+        }
+        return false;
     }
 }

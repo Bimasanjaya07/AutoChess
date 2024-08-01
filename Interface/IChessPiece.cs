@@ -8,7 +8,11 @@ public interface IChessPiece
     public Position GetPosition();
     public void SetPosition(Position position);
     public Statistic GetStatistic();
-    public Statistic SetStatistic(Statistic stats);
+    public void SetStatistic(Statistic stats);
     public Detail GetDetail();
-    public Detail SetDetail(Detail detail);
+    public void SetDetail(Detail detail);
+    public void Attack(IChessPiece targetPiece);
+    public void Attacked(IChessPiece attackingPiece);
+    public void ManaRegen();
+    public void CheckAndActivateAbility();
 }

@@ -2,7 +2,7 @@ namespace GameAutoChess.Class.ChessPiece;
 
 public class Statistic
 {
-    public int HealthPiece { get; set; }
+    public decimal HealthPiece { get; set; }
     public decimal AttackPiece { get; set; }
     public decimal AttackRate { get; set; }
     public int AttackRange { get; set; }

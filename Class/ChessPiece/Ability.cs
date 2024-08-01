@@ -23,12 +23,11 @@ public class Ability : IAbility
     
     
     
-    public void ActivatedAbility(IChessPiece chessPiece)
+    public void ApplyAbility()
     {
         
     }
-
-    public void PassiveAbility(IChessPiece chessPiece)
+    public void DetailAbility()
     {
         
     }

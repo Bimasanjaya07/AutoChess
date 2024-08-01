@@ -5,5 +5,5 @@ namespace GameAutoChess.Interface;
 public interface IPieceStore
 {
     public bool RefreshStore();
-    public List<ChessPiece> GetPieceFromStore();
+    public List<IChessPiece> GetPieceFromStore();
 }
