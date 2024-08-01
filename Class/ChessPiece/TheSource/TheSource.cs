@@ -8,6 +8,7 @@ public class TheSource : IChessPiece
     public Detail DetailPiece { get; set; }
     public Statistic StatsPiece { get; set; }
     public AbilityTheSource AbilityPiece { get; set; }
+    public Behavior BehaviorPiece { get; set; }
 
     public TheSource(Detail detailPiece, Statistic statsPiece, AbilityTheSource abilityPiece)
     {
@@ -52,6 +53,7 @@ public class TheSource : IChessPiece
             targetPiece.GetStatistic().HealthPiece -= StatsPiece.AttackPiece;
             ManaRegen();
             CheckAndActivateAbility();
+            BehaviorPiece.ApplyBehavior();
             await Task.Delay(3000);
         }
     }

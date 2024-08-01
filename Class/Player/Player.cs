@@ -7,6 +7,7 @@ public class Player : IPlayer
     public string NamePlayer { get; set; }
     
     public Player(int idPlayer, string namePlayer)
+    
     {
         IdPlayer = idPlayer;
         NamePlayer = namePlayer;

@@ -30,26 +30,48 @@ public class Board : IBoard
 
     public bool IsFullBoard()
     {
-        throw new NotImplementedException();
+        for (int row = 0; row < BoardPieces.GetLength(0); row++)
+        {
+            for (int col = 0; col < BoardPieces.GetLength(1); col++)
+            {
+                if (BoardPieces[row, col] == null)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public IChessPiece[,] GetBoard()
     {
-        throw new NotImplementedException();
+        return BoardPieces;
     }
 
     public IChessPiece GetPiece(Position position)
     {
-        throw new NotImplementedException();
+        return BoardPieces[position.Column, position.Row];
     }
 
     public void SetPieceFromDeck(IChessPiece piece, Deck deckPosition, Position destination)
     {
-        throw new NotImplementedException();
+        if (IsBoardOccupied(destination))
+        {
+            return;
+        }
+
+        BoardPieces[destination.Column, destination.Row] = piece;
+        deckPosition.SellPieceFromDeck(piece);
     }
 
     public void MovePiece(IChessPiece piece, Position source, Position destination)
     {
-        throw new NotImplementedException();
+        if (IsBoardOccupied(destination))
+        {
+            return;
+        }
+
+        BoardPieces[destination.Column, destination.Row] = piece;
+        BoardPieces[source.Column, source.Row] = null;
     }
 }

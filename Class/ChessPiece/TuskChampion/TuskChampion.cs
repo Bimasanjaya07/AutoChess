@@ -8,6 +8,7 @@ public class TuskChampion : IChessPiece
     public Detail DetailPiece { get; set; }
     public Statistic StatsPiece { get; set; }
     public AbilityTuskChampion AbilityPiece { get; set; }
+    public Behavior BehaviorPiece { get; set; }
 
     public TuskChampion(Detail detailPiece, Statistic statsPiece, AbilityTuskChampion abilityPiece)
     {
@@ -52,6 +53,7 @@ public class TuskChampion : IChessPiece
             targetPiece.GetStatistic().HealthPiece -= StatsPiece.AttackPiece;
             ManaRegen();
             CheckAndActivateAbility();
+            BehaviorPiece.ApplyBehavior();
             await Task.Delay(3000);
         }
     }
