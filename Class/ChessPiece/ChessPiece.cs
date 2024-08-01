@@ -1,46 +1,39 @@
-using GameAutoChess.Interface;
+/*using GameAutoChess.Interface;
 
 namespace GameAutoChess.Class.ChessPiece;
 
 public class ChessPiece : IChessPiece
 {
-    public Position Position { get; set; }
-    public Detail Detail { get; set; }
-    public Statistic Stats { get; set; }
+    public Detail DetailPiece { get; set; }
+    public Statistic StatsPiece { get; set; }
+    public Ability AbilityPiece { get; set; }
 
-    public ChessPiece(Position position, Detail detail, Statistic stats)
-    {
-        Position = position;
-        Detail = detail;
-        Stats = stats;
-    }
-    public ChessPiece(){}
+    
+    /*public ChessPiece(){}#1#
 
 
     public Position GetPosition()
     {
-        return GetPosition();
+        return DetailPiece.Position;
     }
     public void SetPosition(Position position)
     {
-        Position = position;
+        DetailPiece.Position = position;
     }
     public Statistic GetStatistic()
     {
-        return Stats;
+        return StatsPiece;
     }
-    public Statistic SetStatistic(Statistic stats)
+    public void SetStatistic(Statistic stats)
     {
-        Stats = stats;
-        return Stats;
+        StatsPiece = stats;
     }
     public Detail GetDetail()
     {
-        return Detail;
+        return DetailPiece;
     }
-    public Detail SetDetail(Detail detail)
+    public void SetDetail(Detail detail)
     {
-        Detail = detail;
-        return Detail;
+        DetailPiece = detail;
     }
-}
+}*/
