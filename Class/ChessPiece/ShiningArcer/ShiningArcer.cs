@@ -8,6 +8,7 @@ public class ShiningArcer : IChessPiece
     public AbilityShiningArcer AbilityPiece { get; set; }
     public Detail DetailPiece { get; set; }
     public Statistic StatsPiece { get; set; }
+    public Behavior BehaviorPiece { get; set; }
     
 
     public ShiningArcer(AbilityShiningArcer abilityPiece, Detail detailPiece, Statistic statsPiece)
@@ -54,6 +55,7 @@ public class ShiningArcer : IChessPiece
             targetPiece.GetStatistic().HealthPiece -= StatsPiece.AttackPiece;
             ManaRegen();
             CheckAndActivateAbility();
+            BehaviorPiece.ApplyBehavior();
             await Task.Delay(3000);
         }
     }

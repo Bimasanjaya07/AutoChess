@@ -19,7 +19,8 @@ public class Detail
     public int Mana { get; set; }
     public int MaxMana { get; set; }
     public decimal StunDuration { get; set; }
-    public bool IsStunned { get; set; } 
+    public bool IsStunned { get; set; }
+    public JobsPiece Jobs { get;  }
 
     public Detail(int idChessPiece, string name, string description, Position position, int price, int sell, int maxSlotItem, int itemCount, bool isAlive, bool onBoard, RarityPiece rarity, TierPiece tier, int mana, int maxMana)
     {
