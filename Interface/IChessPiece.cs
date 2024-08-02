@@ -15,4 +15,5 @@ public interface IChessPiece
     public void Attacked(IChessPiece attackingPiece);
     public void ManaRegen();
     public void CheckAndActivateAbility();
+    public void OnAlive();
 }

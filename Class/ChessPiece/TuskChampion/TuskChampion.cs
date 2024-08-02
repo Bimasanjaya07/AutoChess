@@ -86,4 +86,14 @@ public class TuskChampion : IChessPiece
             AbilityPiece.ApplyAbility();
         }
     }
+    public void OnAlive()
+    {
+        if (StatsPiece.HealthPiece <= 0)
+        {
+            DetailPiece.IsAlive = false;
+        } else if (StatsPiece.HealthPiece > 0)
+        {
+            DetailPiece.IsAlive = true;
+        }
+    }
 }
