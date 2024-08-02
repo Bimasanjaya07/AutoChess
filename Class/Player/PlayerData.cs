@@ -8,6 +8,7 @@ public class PlayerData
     public int WinStreak { get; set; }
     public int LoseStreak { get; set; }
     public bool ResultMatchWin { get; set; }
+    public int[] InventoryItem { get; set; }
 
     public PlayerData(int id, int coins, decimal healthPlayer, int winStreak, int loseStreak, bool resultMatchWin)
     {

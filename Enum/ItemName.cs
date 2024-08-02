@@ -2,7 +2,7 @@ namespace GameAutoChess.Enum;
 
 public enum ItemName
 {
-    MagickaStaff,
+    MagickaStaff = 1,
     CattleHideArmor,
     LifeCrystal,
 }

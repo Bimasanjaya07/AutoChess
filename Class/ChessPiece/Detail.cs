@@ -21,6 +21,7 @@ public class Detail
     public decimal StunDuration { get; set; }
     public bool IsStunned { get; set; }
     public JobsPiece Jobs { get;  }
+    public int[] Items { get; set; }
 
     public Detail(int idChessPiece, string name, string description, Position position, int price, int sell, int maxSlotItem, int itemCount, bool isAlive, bool onBoard, RarityPiece rarity, TierPiece tier, int mana, int maxMana)
     {

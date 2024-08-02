@@ -12,7 +12,12 @@ public class Player : IPlayer
         IdPlayer = idPlayer;
         NamePlayer = namePlayer;
     }
-    
+
+    public Player(int idPlayer)
+    {
+        IdPlayer = idPlayer;
+    }
+
     public int GetPlayerId()
     {
         return IdPlayer;

@@ -7,10 +7,11 @@ public class Board : IBoard
 {
     public IChessPiece[,] BoardPieces { get; set; }
     public BoardName NameBoard { get; set; }
+    public List<IChessPiece> ListChessPiece { get; set; }
 
     public Board(IChessPiece[,] boardPieces, BoardName nameBoard)
     {
-        BoardPieces = new IChessPiece[8, 8];
+        BoardPieces = new IChessPiece[8, 8]; 
         NameBoard = nameBoard;
     }
 
@@ -53,15 +54,14 @@ public class Board : IBoard
         return BoardPieces[position.Column, position.Row];
     }
 
-    public void SetPieceFromDeck(IChessPiece piece, Deck deckPosition, Position destination)
+    public void SetPieceFromDeck(IChessPiece piece, IDeck deck, Position destination)
     {
         if (IsBoardOccupied(destination))
         {
             return;
         }
-
         BoardPieces[destination.Column, destination.Row] = piece;
-        deckPosition.SellPieceFromDeck(piece);
+        deck.SellPieceFromDeck(piece);
     }
 
     public void MovePiece(IChessPiece piece, Position source, Position destination)
@@ -74,4 +74,19 @@ public class Board : IBoard
         BoardPieces[destination.Column, destination.Row] = piece;
         BoardPieces[source.Column, source.Row] = null;
     }
+    public bool RemovePiece(Position position)
+    {
+        if (IsBoardOccupied(position))
+        {
+            BoardPieces[position.Column, position.Row] = null;
+            return true;
+        }
+        return false;
+    }
+
+    public List<IChessPiece> GetAllPiece()
+    {
+        return ListChessPiece;
+    }
+    
 }

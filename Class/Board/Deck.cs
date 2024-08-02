@@ -7,6 +7,7 @@ public class Deck : IDeck
 {
     public int IdDeck { get; }
     public int MaxSlotPiece { get; }
+    public IChessPiece ChessPiece { get; set; }
     public List<IChessPiece> ChessPieces { get; set; }
     public PlayerData DataPlayer { get; set; }
 
@@ -23,7 +24,6 @@ public class Deck : IDeck
         {
             return true;
         }
-
         return false;
     }
 
@@ -42,8 +42,48 @@ public class Deck : IDeck
         if (ChessPieces.Contains(chessPiece))
         {
             ChessPieces.Remove(chessPiece);
+            DataPlayer.Coins += chessPiece.GetDetail().Price;
             return true;
         }
         return false;
     }
+
+    public bool RemovePieceDeck(IChessPiece chessPiece)
+    {
+        if (ChessPieces.Contains(chessPiece))
+        {
+            ChessPieces.Remove(chessPiece);
+            return true;
+        }
+        return false;
+    }
+    public IChessPiece GetPiece(int idPiece)
+    {
+        if (idPiece == ChessPiece.GetDetail().IdChessPiece)
+        {
+            return ChessPiece;
+        }
+        return null;
+    }
+    
+    public IChessPiece GetPieceFromDeck(int index)
+    {
+        if (index >= 0 && index < ChessPieces.Count)
+        {
+            IChessPiece piece = ChessPieces[index];
+            ChessPieces.RemoveAt(index);
+            return piece;
+        }
+        return null;
+    }
+    public bool GetpositionPiece(IChessPiece chessPiece)
+    {
+        if (ChessPieces.Contains(chessPiece))
+        {
+           return ChessPieces.Remove(chessPiece);
+        }
+
+        return false;
+    }
+   
 }

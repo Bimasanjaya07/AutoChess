@@ -47,8 +47,11 @@ public class AbilityShiningArcer : IAbility
     {
         if (!IsCooldown )
         {
-            shiningArcer.StatsPiece.AttackPiece += MiniDamage;
-            shiningArcer.DetailPiece.StunDuration += MiniStunDuration;
+            if(AbilityTarget == AbilityTarget.Single)
+            {
+                shiningArcer.StatsPiece.AttackPiece += MiniDamage;
+                shiningArcer.DetailPiece.StunDuration += MiniStunDuration;
+            }
             Cooldown = 0;
         }
     }
@@ -62,29 +65,26 @@ public class AbilityShiningArcer : IAbility
             AbilityType = AbilityType.Active;
             AbilityTarget = AbilityTarget.Single;
 
-            if (chessPiece.GetDetail().Tier == TierPiece.OneStar)
+            switch (chessPiece.GetDetail().Tier)
             {
-                MiniDamage = 100;
-                MaxDamage = 300;
-                MiniStunDuration = 1m;
-                MaxStunDuration = 5m;
-                Cooldown = 8;
-            }
-            else if (chessPiece.GetDetail().Tier == TierPiece.TwoStar)
-            {
-                MiniDamage = 165;
-                MaxDamage = 500;
-                MiniStunDuration = 1.5m;
-                MaxStunDuration = 7.5m;
-                Cooldown = 7;
-            }
-            else if (chessPiece.GetDetail().Tier == TierPiece.ThreeStar)
-            {
-                MiniDamage = 250;
-                MaxDamage = 750;
-                MiniStunDuration = 2.5m;
-                MaxStunDuration = 10m;
-                Cooldown = 6;
+                case TierPiece.OneStar:
+                    MiniDamage = 100;
+                    MaxDamage = 300;
+                    MiniStunDuration = 1m;
+                    MaxStunDuration = 5m;
+                    break;
+                case TierPiece.TwoStar:
+                    MiniDamage = 165;
+                    MaxDamage = 500;
+                    MiniStunDuration = 1.5m;
+                    MaxStunDuration = 7.5m;
+                    break;
+                case TierPiece.ThreeStar:
+                    MiniDamage = 250;
+                    MaxDamage = 750;
+                    MiniStunDuration = 2.5m;
+                    MaxStunDuration = 10m;
+                    break;
             }
         }
     }
