@@ -1,12 +1,15 @@
+// Program_Display.cs
 using GameAutoChess.Controller;
 using GameAutoChess.Interface;
 using GameAutoChess.Class;
+using GameAutoChess.Class.ChessPiece;
 
 namespace GameAutoChess.Display
 {
     public class Program_Display
     {
         private List<IPlayer> players = new List<IPlayer>();
+        private List<IChessPiece> chessPieces = new List<IChessPiece>();
         private GameController gameController;
 
         public Program_Display(GameController controller)
@@ -33,15 +36,14 @@ namespace GameAutoChess.Display
                             while (true)
                             {
                                 Console.WriteLine($"Enter ID for player {i}:");
-                                id = int.Parse(Console.ReadLine());
-                                if (playerIds.Contains(id))
-                                {
-                                    Console.WriteLine("ID already exists. Please enter a different ID.");
-                                }
-                                else
+                                if (int.TryParse(Console.ReadLine(), out id) && !playerIds.Contains(id))
                                 {
                                     playerIds.Add(id);
                                     break;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid or duplicate ID. Please enter a unique ID.");
                                 }
                             }
                             Console.WriteLine($"Enter name for player {i}:");
@@ -81,48 +83,70 @@ namespace GameAutoChess.Display
             {
                 for (int col = 0; col < boardArray.GetLength(1); col++)
                 {
-                    Console.Write(boardArray[row, col] != null ? "X " : ". ");
+                    Console.Write(boardArray[row, col] != null ? "[X]" : "[ ]");
                 }
                 Console.WriteLine();
             }
         }
-
+        private void DisplayValidPositions(IPlayer player, IBoard board)
+        {
+            int boardMidPoint = board.GetBoard().GetLength(1) / 2;
+            for (int row = 0; row < board.GetBoard().GetLength(0); row++)
+            {
+                for (int col = 0; col < board.GetBoard().GetLength(1); col++)
+                {
+                    if ((player.GetPlayerId() == 1 && col < boardMidPoint) || (player.GetPlayerId() != 1 && col >= boardMidPoint))
+                    {
+                        if (!board.IsBoardOccupied(new Position(row, col)))
+                        {
+                            Console.Write($"( {col}, {row}) ");
+                        }
+                    }
+                }
+            }
+            Console.WriteLine();
+        }
         public void EnterPrepPhase()
         {
             foreach (var player in players)
             {
                 Console.WriteLine($"Preparation phase for player {player.GetPlayerName()} (ID: {player.GetPlayerId()})");
+                PlayerData playerData = gameController.GetPlayerData(player);
 
+                Console.WriteLine($"Player Coins: {playerData.GetCoins()}");
                 IPieceStore pieceStore = gameController.GetPieceStore(player);
                 IDeck deck = gameController.GetPlayerDeck(player);
                 IBoard board = gameController.GetBoard();
-                List<IChessPiece> pieceInStore = pieceStore.GetAllPiece();
 
                 Console.WriteLine("Available pieces in the store:");
-                var pieces = pieceStore.GetAllPiece();
+                List<IChessPiece> pieces = pieceStore.GetAllPiece();
                 if (pieces.Count == 0)
                 {
                     Console.WriteLine("No pieces available in the store.");
                 }
                 else
                 {
-                    foreach (var piece in pieces)
+                    foreach (IChessPiece piece in pieces)
                     {
-                        var detail = piece.GetDetail();
+                        Detail detail = piece.GetDetail();
                         Console.WriteLine($"Piece ID: {detail.IdChessPiece}, Name: {detail.Name}, Price: {detail.Price}");
                     }
-                }
 
-                Console.WriteLine("Enter the ID of the piece you want to buy:");
-                int pieceId = int.Parse(Console.ReadLine());
-                var pieceToBuy = pieceStore.GetPiece(pieceId);
+                    IChessPiece pieceToBuy = null;
+                    while (pieceToBuy is null)
+                    {
+                        Console.WriteLine("Enter the ID of the piece you want to buy:");
+                        int pieceId = int.Parse(Console.ReadLine());
+                        pieceToBuy = pieceStore.GetPiece(pieceId);
 
-                if (pieceToBuy != null)
-                {
-                    Console.WriteLine("Enter the price of the piece:");
-                    int price = int.Parse(Console.ReadLine());
+                        if (pieceToBuy is null)
+                        {
+                            Console.WriteLine("Invalid piece ID. Please enter a valid piece ID.");
+                        }
+                    }
 
-                    if (gameController.MovePieceFromStoreToDeck(player, pieceToBuy, pieceStore, price, deck))
+                    int price = pieceToBuy.GetDetail().Price;
+                    if (pieceStore.BuyPiece(pieceToBuy, price, deck))
                     {
                         Console.WriteLine("Piece bought successfully.");
                     }
@@ -130,20 +154,29 @@ namespace GameAutoChess.Display
                     {
                         Console.WriteLine("Failed to buy piece.");
                     }
-                }
 
-                Console.WriteLine("Enter the position to place the piece on the board (row and column):");
-                int row = int.Parse(Console.ReadLine());
-                int col = int.Parse(Console.ReadLine());
-                var position = new Position(row, col);
+                    bool validPosition = false;
+                    while (!validPosition)
+                    {
+                        Console.WriteLine("Enter the position to place the piece on the board (row and column):");
+                        Console.Write("Row: ");
+                        int row = int.Parse(Console.ReadLine());
+                        Console.Write("Column: ");
+                        int col = int.Parse(Console.ReadLine());
+                        var position = new Position(row, col);
 
-                if (gameController.MovePieceFromDeckToBoard(player, pieceToBuy, board, position, deck))
-                {
-                    Console.WriteLine("Piece placed on the board successfully.");
-                }
-                else
-                {
-                    Console.WriteLine("Failed to place piece on the board.");
+                        if (gameController.MovePieceFromDeckToBoard(player, pieceToBuy, board, position, deck))
+                        {
+                            Console.WriteLine("Piece placed on the board successfully.");
+                            validPosition = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Failed to place piece on the board. Invalid position.");
+                            Console.WriteLine("Valid positions for you are:");
+                            DisplayValidPositions(player, board);
+                        }
+                    }
                 }
 
                 // Display the board after each player's preparation phase
