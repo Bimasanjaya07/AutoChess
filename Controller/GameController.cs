@@ -11,25 +11,32 @@ public class GameController
     private Dictionary<IPlayer, PlayerData> _player;
     private List<IChessPiece> _chessPieces;
     private IBoard _boards;
-    int MaxPlayer = 8;
-    int minPlayer = 2;
-    
-    public GameController(IPlayer player1, IPlayer player2)
+    public int MaxPlayer = 8;
+    public int minPlayer = 2;
+
+    public GameController()
     {
         _player = new Dictionary<IPlayer, PlayerData>();
-        _player.Add(player1, new PlayerData());
-        _player.Add(player2, new PlayerData());
         _chessPieces = new List<IChessPiece>();
         _boards = new Board(new IChessPiece[8, 8], BoardName.JoyfulBeach);
     }
-    public bool CheckPlayer(int minPlayer, int MaxPlayer)
+    public bool CheckPlayer(int playerCount)
     {
-        if (_player.Count >= minPlayer && _player.Count <= MaxPlayer)
-        {
-            return true;
-        }
-        return false;
+        return playerCount >= minPlayer && playerCount <= MaxPlayer;
     }
+    public void InitializePlayers(List<IPlayer> players)
+    {
+        foreach (var player in players)
+        {
+            _player.Add(player, new PlayerData());
+        }
+    }
+    
+    public IBoard GetBoard()
+    {
+        return _boards;
+    }
+
 
     public List<IPlayer> GetPlayers()
     {
@@ -131,15 +138,16 @@ public class GameController
         return pieces;
     }
 
-    public bool GetItemPlayer(IPlayer player, IItem item)
+    /*public bool GetItemPlayer(IPlayer player, IItem item)
     {
         
     }
     public bool SetItemPiece(IPlayer player, IChessPiece chessPiece, IItem item)
     {
         
-    }
+    }*/
 
+    
     public bool InisiatePieceStore(IPlayer player, IPieceStore pieceStore)
     {
         if (_player.ContainsKey(player))
@@ -149,9 +157,99 @@ public class GameController
             PlayerData playerData = _player[player];
 
             pieceStore = new PieceStore(pieceStore.GetPieceSToreId(), initialPriceRefreshStore, initialChessPieces, playerData);
+            playerData.PieceStore = pieceStore;
             return true;
         }
         return false;
+    }
+    public bool WinRound(IPlayer player, IChessPiece chessPiece)
+    {
+        if (_player.ContainsKey(player))
+        {
+            PlayerData playerData = _player[player];
+            playerData.ResultMatchWin = true;
+            playerData.Coins += 10;
+            return true;
+        }
+        return false;
+    }
+    public bool DefeatRound(IPlayer player)
+    {
+        if (_player.ContainsKey(player))
+        {
+            PlayerData playerData = _player[player];
+            playerData.ResultMatchWin = false;
+            playerData.HealthPlayer -= 10;
+            playerData.Coins += 5;
+            return true;
+        }
+        return false;
+    }
+
+    public async Task<bool> NextRound(IPlayer player)
+    {
+        if (_player.ContainsKey(player))
+        {
+            await Task.Delay(30 * 60 * 1000);
+            return true;
+        }
+        return false;
+    }
+    public bool PlayerLose(IPlayer player)
+    {
+        if (_player.ContainsKey(player))
+        {
+            PlayerData playerData = _player[player];
+            if (playerData.HealthPlayer <= 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool PlayerWin(IPlayer player)
+    {
+        if (_player.ContainsKey(player))
+        {
+            PlayerData playerData = _player[player];
+            if (playerData.HealthPlayer > 0)
+            {
+                foreach (var otherPlayer in _player.Keys)
+                {
+                    if (!otherPlayer.Equals(player) && _player[otherPlayer].HealthPlayer > 0)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool GameEnd()
+    {
+        foreach (var player in _player.Keys)
+        {
+            if (PlayerWin(player) || PlayerLose(player))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<IChessPiece> GetPlayerPieces(IPlayer player) 
+    {
+        if (_player.ContainsKey(player))
+        {
+            return _player[player].GetChessPieces(); 
+        }
+        return new List<IChessPiece>();
+    }
+    public IPieceStore GetPieceStore(IPlayer player)
+    {
+        // Assuming each player has a piece store associated with them
+        return _player[player].PieceStore;
     }
 }
 

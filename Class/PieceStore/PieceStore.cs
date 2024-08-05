@@ -19,6 +19,10 @@ public class PieceStore : IPieceStore
         ListChessPiece = listChessPiece;
         CoinPlayer = coinPlayer;
     }
+    public List<IChessPiece> GetAllPiece()
+    {
+        return ListChessPiece;
+    }
 
     public List<IChessPiece> RefreshStore()
     {

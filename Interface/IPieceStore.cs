@@ -9,4 +9,5 @@ public interface IPieceStore
     public bool BuyPiece(IChessPiece chessPiece, int price, Deck deck);
     public IChessPiece GetPiece(int i);
     public int GetPieceSToreId();
+    public List<IChessPiece> GetAllPiece();
 }
