@@ -6,90 +6,152 @@ using GameAutoChess.Interface;
 
 namespace GameAutoChess.Controller;
 
-    public class GameController
+public class GameController
+{
+    private Dictionary<IPlayer, PlayerData> _player;
+    private List<IChessPiece> _chessPieces;
+    private IBoard _boards;
+    int MaxPlayer = 8;
+    int minPlayer = 2;
+    
+    public GameController(IPlayer player1, IPlayer player2)
     {
-        public readonly int MaxPlayer = 8;
-        private Dictionary<IPlayer, PlayerData> _players;
-        private IBoard _board;
-        private List<IDeck> _listDeck;
-        private List<IPieceStore> _listPieceStore;
-        private List<IChessPiece> _chessPieces;
-
-        public GameController()
+        _player = new Dictionary<IPlayer, PlayerData>();
+        _player.Add(player1, new PlayerData());
+        _player.Add(player2, new PlayerData());
+        _chessPieces = new List<IChessPiece>();
+        _boards = new Board(new IChessPiece[8, 8], BoardName.JoyfulBeach);
+    }
+    public bool CheckPlayer(int minPlayer, int MaxPlayer)
+    {
+        if (_player.Count >= minPlayer && _player.Count <= MaxPlayer)
         {
-            _players = new Dictionary<IPlayer, PlayerData>();
-            _chessPieces = new List<IChessPiece>();
-
-            // Create player
-            IPlayer player1 = new Player(1, "Player 1");
-            IPlayer player2 = new Player(2, "Player 2");
-            _players.Add(player1, new PlayerData(1, 10, 100, 0, 0, false));
-            _players.Add(player2, new PlayerData(2, 10, 100, 0, 0, false));
-
-            // Create board
-            IChessPiece[,] initialPieces = new IChessPiece[8, 8];
-            _board = new Board(initialPieces, BoardName.JoyfulBeach);
-
-            // Create decks
-            _listDeck = new List<IDeck>
-            {
-                new Deck(1, 8, new List<IChessPiece>()),
-                new Deck(2, 8, new List<IChessPiece>())
-            };
-
-            // Create piece stores
-            _listPieceStore = new List<IPieceStore>
-            {
-                new PieceStore(1, 2, _chessPieces),
-                new PieceStore(2, 2, _chessPieces)
-            };
-        }
-
-        
-        public bool PrepPhase(IPlayer player, IPieceStore pieceStore, IDeck deck, IBoard board, int idPiece, int row, int column)
-        {
-            if (player == null || pieceStore == null || deck == null || board == null)
-            {
-                return false;
-            }
-
-            if (!_players.ContainsKey(player))
-            {
-                return false; 
-            }
-            
-            // get piece from store
-            IChessPiece pieceToBuy = pieceStore.GetPiece(idPiece);
-            if (pieceToBuy != null && pieceStore.BuyPiece(pieceToBuy, pieceToBuy.GetDetail().Price))
-            {
-                deck.AddPieceFromStore(pieceToBuy);
-            }
-            
-            // sell piece from deck
-            IChessPiece pieceToSell = deck.GetPieceFromDeck(idPiece);
-            if (pieceToSell != null)
-            {
-                deck.SellPieceFromDeck(pieceToSell);
-            }
-            
-            // set piece from deck to board
-            IChessPiece pieceToSet = deck.GetPieceFromDeck(idPiece);
-            Position position = new Position(column, row);
-            if (pieceToSet != null && !board.IsBoardOccupied(position))
-            {
-                board.SetPieceFromDeck(pieceToSet, deck, position);
-                deck.RemovePieceDeck(pieceToSet);
-            }
-            
-            // set piece from board to deck
-            IChessPiece existingPiece = board.GetPiece(position);
-            if (existingPiece != null)
-            {
-                board.RemovePiece(position);
-            }
             return true;
         }
+        return false;
+    }
+
+    public List<IPlayer> GetPlayers()
+    {
+        return _player.Keys.ToList();
+    }
+    public List<IChessPiece> GetChessPieces()
+    {
+        return _chessPieces;
+    }
+    public bool PrepPhase(IPlayer player, IChessPiece chessPiece, IBoard board, Position position, IPieceStore pieceStore, int piecePrice, Deck deck)
+    {
+        if (_player.ContainsKey(player))
+        {
+            bool buyPiece = pieceStore.BuyPiece(chessPiece, piecePrice, deck);
+            if (buyPiece)
+            {
+                _chessPieces.Add(chessPiece);
+            }
+             
+            
+            if (_chessPieces.Contains(chessPiece) && !board.IsBoardOccupied(position))
+            {
+                _player[player].AddChessPiece(chessPiece);
+                _chessPieces.Remove(chessPiece);
+                board.SetPieceFromDeck(chessPiece, deck, position);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
+    /*public bool CreepBattlePhase(IPlayer player, IChessPiece chessPiece, IBoard board)
+    {
+        if (_player.ContainsKey(player))
+        {
+            if (_player[player].GetChessPieces().Contains(chessPiece) && board.IsBoardOccupied(chessPiece.GetPosition()))
+            {
+                board.RemovePiece(chessPiece.GetPosition());
+                return true;
+            }
+        }
+        return false;
+    }*/
+    public bool MovePieceFromStoreToDeck(IPlayer player, IChessPiece chessPiece, IPieceStore pieceStore, int piecePrice, Deck deck)
+    {
+        if (_player.ContainsKey(player))
+        {
+            bool buyPiece = pieceStore.BuyPiece(chessPiece, piecePrice, deck);
+            if (buyPiece)
+            {
+                _player[player].AddChessPiece(chessPiece);
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool MovePieceFromDeckToBoard(IPlayer player, IChessPiece chessPiece, IBoard board, Position position, Deck deck)
+    {
+        if (_player.ContainsKey(player))
+        {
+            if (!board.IsBoardOccupied(position))
+            {
+                board.SetPieceFromDeck(chessPiece, deck, position);
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool MovePiece (IPlayer player, IChessPiece chessPiece, IBoard board, Position source, Position destination)
+    {
+        if (_player.ContainsKey(player))
+        {
+            if (board.GetPiece(source) == chessPiece && !board.IsBoardOccupied(destination))
+            {
+                board.MovePiece(chessPiece, source, destination);
+                return true;
+            }
+        }
+        return false;
+    }
+    public List<IChessPiece> GetAllPieceDeck(Deck deck)
+    {
+        return deck.GetAllPiece();
+    }
+    public List<IChessPiece> GetAllPieceBoard(IBoard board)
+    {
+        List<IChessPiece> pieces = new List<IChessPiece>();
+        for (int row = 0; row < board.GetBoard().GetLength(0); row++)
+        {
+            for (int col = 0; col < board.GetBoard().GetLength(1); col++)
+            {
+                if (board.GetBoard()[row, col] != null)
+                {
+                    pieces.Add(board.GetBoard()[row, col]);
+                }
+            }
+        }
+        return pieces;
+    }
+
+    public bool GetItemPlayer(IPlayer player, IItem item)
+    {
+        
+    }
+    public bool SetItemPiece(IPlayer player, IChessPiece chessPiece, IItem item)
+    {
         
     }
 
+    public bool InisiatePieceStore(IPlayer player, IPieceStore pieceStore)
+    {
+        if (_player.ContainsKey(player))
+        {
+            List<IChessPiece> initialChessPieces = new List<IChessPiece>(); 
+            int initialPriceRefreshStore = 2; 
+            PlayerData playerData = _player[player];
+
+            pieceStore = new PieceStore(pieceStore.GetPieceSToreId(), initialPriceRefreshStore, initialChessPieces, playerData);
+            return true;
+        }
+        return false;
+    }
+}
 
