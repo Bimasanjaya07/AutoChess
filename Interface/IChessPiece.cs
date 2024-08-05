@@ -16,4 +16,5 @@ public interface IChessPiece
     public void ManaRegen();
     public void CheckAndActivateAbility();
     public void OnAlive();
+     
 }

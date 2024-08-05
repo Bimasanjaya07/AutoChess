@@ -12,6 +12,7 @@ public class PlayerData
     public bool ResultMatchWin { get; set; }
     public int[] InventoryItem { get; set; }
     public List<IChessPiece> ChessPieces { get; set; }
+    public IPieceStore PieceStore { get; set; }
 
     public PlayerData(int id, int coins, decimal healthPlayer, int winStreak, int loseStreak, bool resultMatchWin)
     {
