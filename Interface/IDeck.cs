@@ -11,7 +11,7 @@ public interface IDeck
     public IChessPiece GetPieceFromDeck(int pieceIndex);
     public IChessPiece GetPiece(int idPiece);
     public bool RemovePieceDeck(IChessPiece chessPiece);
+    public int GetDeckId();
+    public List<IChessPiece> GetAllPiece();
 
-    PlayerData DataPlayer { get; set; }
-    List<IChessPiece> ChessPieces { get; }
 }

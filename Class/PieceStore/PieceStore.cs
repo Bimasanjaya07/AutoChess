@@ -1,3 +1,4 @@
+// Class/PieceStore/PieceStore.cs
 using GameAutoChess.Class.Board;
 using GameAutoChess.Enum;
 using GameAutoChess.Interface;
@@ -11,11 +12,12 @@ public class PieceStore : IPieceStore
     public List<IChessPiece> ListChessPiece { get; set; }
     public RarityPiece Rarity { get; set; }
 
-    public PieceStore(int idPieceStore, int priceRefreshStore, List<IChessPiece> listChessPiece)
+    public PieceStore(int idPieceStore, int priceRefreshStore, List<IChessPiece> listChessPiece, PlayerData coinPlayer)
     {
         IdPieceStore = idPieceStore;
         PriceRefreshStore = priceRefreshStore;
         ListChessPiece = listChessPiece;
+        CoinPlayer = coinPlayer;
     }
 
     public List<IChessPiece> RefreshStore()
@@ -31,7 +33,7 @@ public class PieceStore : IPieceStore
         return null;
     }
 
-    public IChessPiece BuyPiece(IChessPiece chessPiece, int price, Deck deck)
+    public bool BuyPiece(IChessPiece chessPiece, int price, Deck deck)
     {
         if (!deck.IsDeckFull())
         {
@@ -40,10 +42,10 @@ public class PieceStore : IPieceStore
                 CoinPlayer.Coins -= price;
                 deck.AddPieceFromStore(chessPiece);
                 ListChessPiece.Remove(chessPiece);
-                return chessPiece;
+                return true;
             }
         }
-        return null;
+        return false;
     }
     public IChessPiece GetPiece(int idPiece)
     {
@@ -68,14 +70,8 @@ public class PieceStore : IPieceStore
         return false;
     }
 
-    /*public bool SendPieceToDeck(ChessPiece chessPiece, Deck playerDeck)
+    public int GetPieceSToreId()
     {
-        if (chessPiece != null)
-        {
-            playerDeck.AddPieceFromStore(chessPiece);
-            ListChessPiece.Remove(chessPiece);
-            return true;
-        }
-        return false;
-    }*/
+        return IdPieceStore;
+    }
 }

@@ -85,5 +85,13 @@ public class Deck : IDeck
 
         return false;
     }
+    public int GetDeckId()
+    {
+        return IdDeck;
+    }
+    public List<IChessPiece> GetAllPiece()
+    {
+        return ChessPieces;
+    }
    
 }
