@@ -1,9 +1,6 @@
-// Update Program_Display.cs
-
 using GameAutoChess.Controller;
 using GameAutoChess.Interface;
 using GameAutoChess.Class;
-using System.Threading.Tasks;
 
 namespace GameAutoChess.Display
 {
@@ -88,30 +85,6 @@ namespace GameAutoChess.Display
                 Console.WriteLine();
             }
         }
-
-        public async Task PrepPhase()
-        {
-            foreach (var player in players)
-            {
-                Console.WriteLine($"Player {player.GetPlayerId()} ({player.GetPlayerName()})'s turn:");
-                Console.WriteLine("Available heroes in the piece store:");
-                var pieceStore = gameController.GetPieceStore(player);
-                if (pieceStore != null)
-                {
-                    foreach (var piece in pieceStore.GetAllPiece())
-                    {
-                        Console.WriteLine($"ID: {piece.GetDetail().IdChessPiece}, Name: {piece.GetDetail().Name}, Price: {piece.GetDetail().Price}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No pieces available in the store.");
-                }
-
-                // Simulate player actions (e.g., buying pieces, placing pieces on the board)
-                await Task.Delay(30000); // 30 seconds for each player
-                DisplayBoard(); // Display the updated board after each player's turn
-            }
-        }
     }
+    
 }

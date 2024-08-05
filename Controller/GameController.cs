@@ -1,5 +1,8 @@
+using System.Text;
 using GameAutoChess.Class;
 using GameAutoChess.Class.Board;
+using GameAutoChess.Class.ChessPiece;
+using GameAutoChess.Class.ChessPiece.PieceName;
 using GameAutoChess.Class.PieceStore;
 using GameAutoChess.Enum;
 using GameAutoChess.Interface;
@@ -19,33 +22,42 @@ public class GameController
         _player = new Dictionary<IPlayer, PlayerData>();
         _chessPieces = new List<IChessPiece>();
         _boards = new Board(new IChessPiece[8, 8], BoardName.JoyfulBeach);
+        InitializeChessPieces();
     }
+
     public bool CheckPlayer(int playerCount)
     {
         return playerCount >= minPlayer && playerCount <= MaxPlayer;
     }
+
     public void InitializePlayers(List<IPlayer> players)
     {
         foreach (var player in players)
         {
-            _player.Add(player, new PlayerData());
+            PlayerData playerData = new PlayerData(player.GetPlayerId(), 2, 100, 0, 0, false);
+            int pieceStoreId = player.GetPlayerId(); // Assuming player ID is unique and can be used as piece store ID
+            int deckId = player.GetPlayerId(); // Assuming player ID is unique and can be used as deck ID
+            playerData.PieceStore = new PieceStore(pieceStoreId, 2, new List<IChessPiece>(), playerData); // Initialize PieceStore with unique ID
+            playerData.Deck = new Deck(deckId, 5, new List<IChessPiece>()); // Initialize Deck with unique ID
+            _player.Add(player, playerData);
         }
     }
-    
+
     public IBoard GetBoard()
     {
         return _boards;
     }
 
-
     public List<IPlayer> GetPlayers()
     {
         return _player.Keys.ToList();
     }
+
     public List<IChessPiece> GetChessPieces()
     {
         return _chessPieces;
     }
+
     public bool PrepPhase(IPlayer player, IChessPiece chessPiece, IBoard board, Position position, IPieceStore pieceStore, int piecePrice, Deck deck)
     {
         if (_player.ContainsKey(player))
@@ -55,8 +67,7 @@ public class GameController
             {
                 _chessPieces.Add(chessPiece);
             }
-             
-            
+
             if (_chessPieces.Contains(chessPiece) && !board.IsBoardOccupied(position))
             {
                 _player[player].AddChessPiece(chessPiece);
@@ -67,20 +78,7 @@ public class GameController
         }
         return false;
     }
-    
 
-    /*public bool CreepBattlePhase(IPlayer player, IChessPiece chessPiece, IBoard board)
-    {
-        if (_player.ContainsKey(player))
-        {
-            if (_player[player].GetChessPieces().Contains(chessPiece) && board.IsBoardOccupied(chessPiece.GetPosition()))
-            {
-                board.RemovePiece(chessPiece.GetPosition());
-                return true;
-            }
-        }
-        return false;
-    }*/
     public bool MovePieceFromStoreToDeck(IPlayer player, IChessPiece chessPiece, IPieceStore pieceStore, int piecePrice, Deck deck)
     {
         if (_player.ContainsKey(player))
@@ -94,6 +92,7 @@ public class GameController
         }
         return false;
     }
+
     public bool MovePieceFromDeckToBoard(IPlayer player, IChessPiece chessPiece, IBoard board, Position position, Deck deck)
     {
         if (_player.ContainsKey(player))
@@ -106,7 +105,8 @@ public class GameController
         }
         return false;
     }
-    public bool MovePiece (IPlayer player, IChessPiece chessPiece, IBoard board, Position source, Position destination)
+
+    public bool MovePiece(IPlayer player, IChessPiece chessPiece, IBoard board, Position source, Position destination)
     {
         if (_player.ContainsKey(player))
         {
@@ -118,10 +118,12 @@ public class GameController
         }
         return false;
     }
+
     public List<IChessPiece> GetAllPieceDeck(Deck deck)
     {
         return deck.GetAllPiece();
     }
+
     public List<IChessPiece> GetAllPieceBoard(IBoard board)
     {
         List<IChessPiece> pieces = new List<IChessPiece>();
@@ -138,22 +140,12 @@ public class GameController
         return pieces;
     }
 
-    /*public bool GetItemPlayer(IPlayer player, IItem item)
-    {
-        
-    }
-    public bool SetItemPiece(IPlayer player, IChessPiece chessPiece, IItem item)
-    {
-        
-    }*/
-
-    
     public bool InisiatePieceStore(IPlayer player, IPieceStore pieceStore)
     {
         if (_player.ContainsKey(player))
         {
-            List<IChessPiece> initialChessPieces = new List<IChessPiece>(); 
-            int initialPriceRefreshStore = 2; 
+            List<IChessPiece> initialChessPieces = new List<IChessPiece>();
+            int initialPriceRefreshStore = 2;
             PlayerData playerData = _player[player];
 
             pieceStore = new PieceStore(pieceStore.GetPieceSToreId(), initialPriceRefreshStore, initialChessPieces, playerData);
@@ -162,6 +154,7 @@ public class GameController
         }
         return false;
     }
+
     public bool WinRound(IPlayer player, IChessPiece chessPiece)
     {
         if (_player.ContainsKey(player))
@@ -173,6 +166,7 @@ public class GameController
         }
         return false;
     }
+
     public bool DefeatRound(IPlayer player)
     {
         if (_player.ContainsKey(player))
@@ -195,6 +189,7 @@ public class GameController
         }
         return false;
     }
+
     public bool PlayerLose(IPlayer player)
     {
         if (_player.ContainsKey(player))
@@ -207,6 +202,7 @@ public class GameController
         }
         return false;
     }
+
     public bool PlayerWin(IPlayer player)
     {
         if (_player.ContainsKey(player))
@@ -216,7 +212,7 @@ public class GameController
             {
                 foreach (var otherPlayer in _player.Keys)
                 {
-                    if (!otherPlayer.Equals(player) && _player[otherPlayer].HealthPlayer > 0)
+                    if (otherPlayer != player && _player[otherPlayer].HealthPlayer > 0)
                     {
                         return false;
                     }
@@ -226,6 +222,7 @@ public class GameController
         }
         return false;
     }
+
     public bool GameEnd()
     {
         foreach (var player in _player.Keys)
@@ -238,18 +235,63 @@ public class GameController
         return false;
     }
 
-    public List<IChessPiece> GetPlayerPieces(IPlayer player) 
+    public List<IChessPiece> GetPlayerPieces(IPlayer player)
     {
         if (_player.ContainsKey(player))
         {
-            return _player[player].GetChessPieces(); 
+            return _player[player].GetChessPieces();
         }
         return new List<IChessPiece>();
     }
+
     public IPieceStore GetPieceStore(IPlayer player)
     {
-        // Assuming each player has a piece store associated with them
         return _player[player].PieceStore;
     }
-}
 
+    public void InitializeChessPieces()
+    {
+        // Create abilities
+        AbilityShiningArcer abilityShiningArcer = new AbilityShiningArcer(3, AbilityName.ShootingStar, "Shoots a star to the enemy, dealing damage and stunning them", DamageType.MagicalDamage, AbilityType.Active, AbilityTarget.Single, 3, 50, 100, 1, 2);
+        AbilityTuskChampion abilityTuskChampion = new AbilityTuskChampion(2, AbilityName.ArcticPunch, "Tusk Champion punches the enemy with his walrus punch, dealing critical damage", DamageType.PhysicalDamage, AbilityType.Active, AbilityTarget.Single, 3.0M, 100);
+        AbilityTheSource abilityTheSource = new AbilityTheSource(1, AbilityName.Awaken, "The Source releases a blast of energy, dealing damage to all enemies", DamageType.MagicalDamage, AbilityType.Active, AbilityTarget.Range, 3, 12);
+
+        // Create details
+        Detail detailTuskChampion = new Detail(1, "Tusk Champion", "A powerful warrior with a deadly punch", new Position(0, 0), 5, 3, 1, 0, true, true, RarityPiece.Common, TierPiece.OneStar, 0, 100);
+        Detail detailShiningArcer = new Detail(2, "Shining Arcer", "An archer with a stunning shot", new Position(1, 0), 4, 2, 1, 0, true, true, RarityPiece.Rare, TierPiece.OneStar, 0, 100);
+        Detail detailTheSource = new Detail(3, "The Source", "A mystical being with powerful energy", new Position(2, 0), 6, 4, 1, 0, true, true, RarityPiece.Legendary, TierPiece.OneStar, 0, 100);
+
+        // Create statistics
+        Statistic statsTuskChampion = new Statistic(100, 20, 1.5m, 1, 30, 5, 10);
+        Statistic statsShiningArcer = new Statistic(80, 15, 1.2m, 3, 25, 3, 8);
+        Statistic statsTheSource = new Statistic(120, 10, 1.0m, 2, 40, 4, 12);
+
+        // Create chess pieces
+        IChessPiece tuskChampion = new TuskChampion(detailTuskChampion, statsTuskChampion, abilityTuskChampion);
+        IChessPiece shiningArcer = new ShiningArcer(abilityShiningArcer, detailShiningArcer, statsShiningArcer);
+        IChessPiece theSource = new TheSource(detailTheSource, statsTheSource, abilityTheSource);
+
+        // Add chess pieces to the list
+        _chessPieces.Add(tuskChampion);
+        _chessPieces.Add(shiningArcer);
+        _chessPieces.Add(theSource);
+    }
+
+    public int GetPlayerCoins(IPlayer player)
+    {
+        if (_player.ContainsKey(player))
+        {
+            return _player[player].Coins;
+        }
+        return 0;
+    }
+
+    public Deck GetPlayerDeck(IPlayer player)
+    {
+        if (_player.ContainsKey(player))
+        {
+            return _player[player].Deck;
+        }
+        return null;
+    }
+}

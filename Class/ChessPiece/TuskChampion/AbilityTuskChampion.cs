@@ -16,7 +16,19 @@ public class AbilityTuskChampion : IAbility
     public bool IsCooldown { get; set; }
     public TuskChampion tuskChampion { get; set; }
     public IChessPiece chessPiece { get; set; }
-    
+
+    public AbilityTuskChampion(int idAbility, AbilityName name, string description, DamageType damageType, AbilityType abilityType, AbilityTarget abilityTarget, decimal lethalBlowDamage, int cooldown)
+    {
+        IdAbility = idAbility;
+        Name = name;
+        Description = description;
+        DamageType = damageType;
+        AbilityType = abilityType;
+        AbilityTarget = abilityTarget;
+        LethalBlowDamage = lethalBlowDamage;
+        Cooldown = cooldown;
+    }
+
     public void ApplyAbility()
     {
         LethalBlowDamage = 300/100;

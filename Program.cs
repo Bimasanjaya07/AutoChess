@@ -1,10 +1,5 @@
-﻿// Update Program.cs
-
-using GameAutoChess.Class;
-using GameAutoChess.Display;
+﻿using GameAutoChess.Display;
 using GameAutoChess.Controller;
-using GameAutoChess.Interface;
-using System.Threading.Tasks;
 
 namespace GameAutoChess.Program
 {
@@ -17,7 +12,6 @@ namespace GameAutoChess.Program
             display.InputPlayerCount();
             display.DisplayPlayerNames();
             display.DisplayBoard();
-            await display.PrepPhase();
         }
-    }
+    } 
 }

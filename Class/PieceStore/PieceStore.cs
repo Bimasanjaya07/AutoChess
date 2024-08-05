@@ -37,15 +37,16 @@ public class PieceStore : IPieceStore
         return null;
     }
 
-    public bool BuyPiece(IChessPiece chessPiece, int price, Deck deck)
+    // PieceStore.cs
+    public bool BuyPiece(IChessPiece piece, int price, Deck deck)
     {
-        if (!deck.IsDeckFull())
+        if (piece != null && deck != null && !deck.IsDeckFull())
         {
-            if (price == chessPiece.GetDetail().Price && CoinPlayer.Coins >= price)
+            if (CoinPlayer.Coins >= price)
             {
                 CoinPlayer.Coins -= price;
-                deck.AddPieceFromStore(chessPiece);
-                ListChessPiece.Remove(chessPiece);
+                deck.AddPieceFromStore(piece);
+                ListChessPiece.Remove(piece); // Remove piece from store after buying
                 return true;
             }
         }

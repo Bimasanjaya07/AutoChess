@@ -1,3 +1,4 @@
+using GameAutoChess.Class.Board;
 using GameAutoChess.Interface;
 
 namespace GameAutoChess.Class;
@@ -13,6 +14,7 @@ public class PlayerData
     public int[] InventoryItem { get; set; }
     public List<IChessPiece> ChessPieces { get; set; }
     public IPieceStore PieceStore { get; set; }
+    public Deck Deck { get; set; }
 
     public PlayerData(int id, int coins, decimal healthPlayer, int winStreak, int loseStreak, bool resultMatchWin)
     {
@@ -23,7 +25,6 @@ public class PlayerData
         LoseStreak = loseStreak;
         ResultMatchWin = resultMatchWin;
     }
-    public PlayerData(){}
 
     public void RecordMatchResult(bool result)
     {
