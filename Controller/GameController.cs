@@ -190,6 +190,36 @@ public class GameController
         }
         return false;
     }*/
+    // GameController.cs
+    // GameController.cs
+    // GameController.cs
+    // GameController.cs
+    public bool PvPBattle(IPlayer player, IPlayer otherPlayer, IChessPiece chessPiece, IBoard board, Position position)
+    {
+        if (_player.ContainsKey(player) && _player.ContainsKey(otherPlayer))
+        {
+            if (position != null && board.GetPiece(position) != null && chessPiece != null)
+            {
+                IChessPiece enemyPiece = board.GetPiece(position);
+                if (enemyPiece.GetDetail().IdChessPiece != chessPiece.GetDetail().IdChessPiece)
+                {
+                    // Simulate battle and update health
+                    enemyPiece.GetStatistic().HealthPiece -= chessPiece.GetStatistic().AttackPiece;
+                    chessPiece.GetStatistic().HealthPiece -= enemyPiece.GetStatistic().AttackPiece;
+
+                    if (enemyPiece.GetStatistic().HealthPiece <= 0 && chessPiece.GetStatistic().HealthPiece > 0)
+                    {
+                        return true; // Player wins
+                    }
+                    else if (chessPiece.GetStatistic().HealthPiece <= 0 && enemyPiece.GetStatistic().HealthPiece > 0)
+                    {
+                        return false; // Other player wins
+                    }
+                }
+            }
+        }
+        return false; // Default to other player wins
+    }
 
     public bool WinRound(IPlayer player, IChessPiece chessPiece)
     {
@@ -198,6 +228,7 @@ public class GameController
             PlayerData playerData = _player[player];
             playerData.ResultMatchWin = true;
             playerData.Coins += 10;
+            playerData.WinStreak++;
             return true;
         }
         return false;
@@ -211,6 +242,7 @@ public class GameController
             playerData.ResultMatchWin = false;
             playerData.HealthPlayer -= 10;
             playerData.Coins += 5;
+            playerData.LoseStreak++;
             return true;
         }
         return false;

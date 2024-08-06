@@ -26,8 +26,4 @@ public class Player : IPlayer
     {
         return NamePlayer;
     }
-    public void SetPlayerName(string name)
-    {
-        NamePlayer = name;
-    }
 }

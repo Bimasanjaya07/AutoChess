@@ -3,6 +3,8 @@ using GameAutoChess.Controller;
 using GameAutoChess.Interface;
 using GameAutoChess.Class;
 using GameAutoChess.Class.ChessPiece;
+// Program_Display.cs
+using System.Threading.Tasks;
 
 namespace GameAutoChess.Display
 {
@@ -19,48 +21,73 @@ namespace GameAutoChess.Display
 
         public void InputPlayerCount()
         {
+            Console.Clear();
+            Console.WriteLine("Welcome to AutoChess. Please input the number of players.");
+            int playerCount = GetPlayerCount();
+            for (int i = 1; i <= playerCount; i++)
+            {
+                SetPlayerDetails(i);
+            }
+            gameController.InitializePlayers(players);
+            Console.Clear();
+        }
+
+        private int GetPlayerCount()
+        {
             int minPlayer = gameController.minPlayer;
             int maxPlayer = gameController.MaxPlayer;
 
             while (true)
             {
                 Console.WriteLine($"Enter the number of players (between {minPlayer} and {maxPlayer}):");
-                if (int.TryParse(Console.ReadLine(), out int playerCount))
+                if (int.TryParse(Console.ReadLine(), out int playerCount) && playerCount >= minPlayer && playerCount <= maxPlayer)
                 {
-                    if (playerCount >= minPlayer && playerCount <= maxPlayer)
-                    {
-                        HashSet<int> playerIds = new HashSet<int>();
-                        for (int i = 1; i <= playerCount; i++)
-                        {
-                            int id;
-                            while (true)
-                            {
-                                Console.WriteLine($"Enter ID for player {i}:");
-                                if (int.TryParse(Console.ReadLine(), out id) && !playerIds.Contains(id))
-                                {
-                                    playerIds.Add(id);
-                                    break;
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid or duplicate ID. Please enter a unique ID.");
-                                }
-                            }
-                            Console.WriteLine($"Enter name for player {i}:");
-                            string name = Console.ReadLine();
-                            players.Add(new Player(id, name));
-                        }
-                        gameController.InitializePlayers(players);
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Number of players must be between {minPlayer} and {maxPlayer}. Please try again.");
-                    }
+                    return playerCount;
                 }
                 else
                 {
-                    Console.WriteLine("Invalid number of players. Please enter a valid number.");
+                    Console.WriteLine($"Number of players must be between {minPlayer} and {maxPlayer}. Please try again.");
+                }
+            }
+        }
+
+        private void SetPlayerDetails(int playerNumber)
+        {
+            int id = GetPlayerId(playerNumber);
+            string name = GetPlayerName(playerNumber);
+            players.Add(new Player(id, name));
+        }
+
+        private int GetPlayerId(int playerNumber)
+        {
+            HashSet<int> playerIds = new HashSet<int>(players.Select(p => p.GetPlayerId()));
+            while (true)
+            {
+                Console.WriteLine($"Enter ID for player {playerNumber}:");
+                if (int.TryParse(Console.ReadLine(), out int id) && !playerIds.Contains(id))
+                {
+                    return id;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid or duplicate ID. Please enter a unique ID.");
+                }
+            }
+        }
+
+        private string GetPlayerName(int playerNumber)
+        {
+            while (true)
+            {
+                Console.WriteLine($"Enter name for player {playerNumber}:");
+                string name = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    return name;
+                }
+                else
+                {
+                    Console.WriteLine("Please input a valid name.");
                 }
             }
         }
@@ -113,6 +140,8 @@ namespace GameAutoChess.Display
                 Console.WriteLine($"Preparation phase for player {player.GetPlayerName()} (ID: {player.GetPlayerId()})");
                 PlayerData playerData = gameController.GetPlayerData(player);
                 Console.WriteLine($"Player Health: {playerData.HealthPlayer}");
+                Console.WriteLine($"WinStreak: {playerData.WinStreak}");
+                Console.WriteLine($"LoseStreak: {playerData.LoseStreak}");
                 Console.WriteLine($"Player Coins: {playerData.GetCoins()}");
                 IPieceStore pieceStore = gameController.GetPieceStore(player);
                 IDeck deck = gameController.GetPlayerDeck(player);
@@ -218,6 +247,48 @@ namespace GameAutoChess.Display
                 movePieceResponse = Console.ReadLine().ToLower();
             }
         }
-        
+
+        // Program_Display.cs
+        // Program_Display.cs
+        public void BattlePlayers()
+        {
+            Console.WriteLine("Battle phase:");
+            for (int i = 0; i < players.Count; i++)
+            {
+                for (int j = i + 1; j < players.Count; j++)
+                {
+                    IPlayer player1 = players[i];
+                    IPlayer player2 = players[j];
+                    Console.WriteLine($"Battle between {player1.GetPlayerName()} (ID: {player1.GetPlayerId()}) and {player2.GetPlayerName()} (ID: {player2.GetPlayerId()})");
+
+                    // Assuming PvPBattle method requires a valid position and chessPiece
+                    Position position = new Position(0, 0); // Example position, adjust as needed
+                    IChessPiece chessPiece = gameController.GetPlayerPieces(player1).FirstOrDefault(); // Example piece, adjust as needed
+                    bool battleResult = gameController.PvPBattle(player1, player2, chessPiece, gameController.GetBoard(), position);
+
+                    if (battleResult)
+                    {
+                        Console.WriteLine($"Player {player1.GetPlayerName()} (ID: {player1.GetPlayerId()}) won the battle.");
+                        gameController.WinRound(player1, chessPiece);
+                        gameController.DefeatRound(player2);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Player {player2.GetPlayerName()} (ID: {player2.GetPlayerId()}) won the battle.");
+                        gameController.WinRound(player2, chessPiece);
+                        gameController.DefeatRound(player1);
+                    }
+
+                    // Introduce a delay of 10 seconds between battles
+                    Task.Delay(10000).Wait();
+                }
+            }
+
+            foreach (var player in players)
+            {
+                PlayerData playerData = gameController.GetPlayerData(player);
+                Console.WriteLine($"Player {player.GetPlayerName()} (ID: {player.GetPlayerId()}) health: {playerData.HealthPlayer}");
+            }
+        }
     }
 }

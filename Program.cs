@@ -15,6 +15,7 @@ namespace GameAutoChess.Program
             display.DisplayPlayerNames();
             display.DisplayBoard();
             display.EnterPrepPhase();
+            display.BattlePlayers();
         }
     }
 }

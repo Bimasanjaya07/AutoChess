@@ -4,5 +4,4 @@ public interface IPlayer
 {
     public int GetPlayerId();
     public string GetPlayerName();
-    public void SetPlayerName(string name);
 }
