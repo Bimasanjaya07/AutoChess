@@ -10,4 +10,6 @@ public interface IPieceStore
     public IChessPiece GetPiece(int i);
     public int GetPieceSToreId();
     public List<IChessPiece> GetAllPiece();
+    public List<IChessPiece> RandomizePiece();
+
 }

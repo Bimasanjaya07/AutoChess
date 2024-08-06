@@ -38,8 +38,34 @@ public class AbilityTuskChampion : IAbility
             Cooldown = 0;
         }
     }
+
     public void DetailAbility()
     {
-        
+        DamageType = DamageType.PhysicalDamage;
+        if (IdAbility == chessPiece.GetDetail().IdChessPiece)
+        {
+            Name = AbilityName.ArcticPunch;
+            Description =
+                "Tusk Champion punches an enemy with a powerful blow, dealing damage and stunning the target.";
+            DamageType = DamageType.PhysicalDamage;
+            AbilityType = AbilityType.Active;
+            AbilityTarget = AbilityTarget.Single;
+
+            switch (chessPiece.GetDetail().Tier)
+            {
+                case TierPiece.OneStar:
+                    LethalBlowDamage = 300 / 100;
+                    Cooldown = 6;
+                    break;
+                case TierPiece.TwoStar:
+                    LethalBlowDamage = 400 / 100;
+                    Cooldown = 5;
+                    break;
+                case TierPiece.ThreeStar:
+                    LethalBlowDamage = 600 / 100;
+                    Cooldown = 4;
+                    break;
+            }
+        }
     }
 }
