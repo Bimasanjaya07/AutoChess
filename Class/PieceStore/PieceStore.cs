@@ -1,5 +1,7 @@
 // Class/PieceStore/PieceStore.cs
 using GameAutoChess.Class.Board;
+using GameAutoChess.Class.ChessPiece;
+using GameAutoChess.Class.ChessPiece.PieceName;
 using GameAutoChess.Enum;
 using GameAutoChess.Interface;
 
@@ -11,13 +13,15 @@ public class PieceStore : IPieceStore
     public PlayerData CoinPlayer { get; set; }
     public List<IChessPiece> ListChessPiece { get; set; }
     public RarityPiece Rarity { get; set; }
+    private List<IChessPiece> _allPieces;
 
-    public PieceStore(int idPieceStore, int priceRefreshStore, List<IChessPiece> listChessPiece, PlayerData coinPlayer)
+    public PieceStore(int idPieceStore, int priceRefreshStore, List<IChessPiece> listChessPiece, PlayerData coinPlayer, List<IChessPiece> allPieces)
     {
         IdPieceStore = idPieceStore;
         PriceRefreshStore = priceRefreshStore;
         ListChessPiece = listChessPiece;
         CoinPlayer = coinPlayer;
+        _allPieces = allPieces;
     }
     public List<IChessPiece> GetAllPiece()
     {
@@ -37,15 +41,16 @@ public class PieceStore : IPieceStore
         return null;
     }
 
-    public bool BuyPiece(IChessPiece chessPiece, int price, Deck deck)
+    // PieceStore.cs
+    public bool BuyPiece(IChessPiece piece, int price, IDeck deck)
     {
-        if (!deck.IsDeckFull())
+        if (piece != null && deck != null && !deck.IsDeckFull())
         {
-            if (price == chessPiece.GetDetail().Price && CoinPlayer.Coins >= price)
+            if (CoinPlayer.Coins >= price)
             {
                 CoinPlayer.Coins -= price;
-                deck.AddPieceFromStore(chessPiece);
-                ListChessPiece.Remove(chessPiece);
+                deck.AddPieceFromStore(piece);
+                ListChessPiece.Remove(piece); // Remove piece from store after buying
                 return true;
             }
         }
@@ -63,19 +68,15 @@ public class PieceStore : IPieceStore
         return null;
     }
 
-    public bool BuyPiece(IChessPiece pieceToBuy, int price)
-    {
-        if (CoinPlayer.Coins >= price)
-        {
-            CoinPlayer.Coins -= price;
-            ListChessPiece.Remove(pieceToBuy);
-            return true;
-        }
-        return false;
-    }
-
     public int GetPieceSToreId()
     {
         return IdPieceStore;
+    }
+    
+    public List<IChessPiece> RandomizePiece()
+    {
+        ListChessPiece.Clear();
+        ListChessPiece = _allPieces.OrderBy(x => Guid.NewGuid()).Take(3).ToList(); // Randomly select 3 pieces
+        return ListChessPiece;
     }
 }

@@ -1,117 +1,339 @@
-// Update Program_Display.cs
-
 using GameAutoChess.Controller;
 using GameAutoChess.Interface;
 using GameAutoChess.Class;
-using System.Threading.Tasks;
+using GameAutoChess.Class.ChessPiece;
 
-namespace GameAutoChess.Display
-{
-    public class Program_Display
+namespace GameAutoChess;
+
+    public class ProgramDisplay
     {
-        private List<IPlayer> players = new List<IPlayer>();
-        private GameController gameController;
+        private readonly List<IPlayer> _players  = new List<IPlayer>();
+        private readonly GameController _gameController;
 
-        public Program_Display(GameController controller)
+        public ProgramDisplay(GameController controller)
         {
-            gameController = controller;
+            _gameController = controller;
         }
 
         public void InputPlayerCount()
         {
-            Console.WriteLine("Enter the number of players:");
-            if (int.TryParse(Console.ReadLine(), out int playerCount))
+            Console.Clear();
+            Console.WriteLine("Welcome to AutoChess. Please input the number of players.");
+            int playerCount = GetPlayerCount();
+            for (int i = 1; i <= playerCount; i++)
             {
-                if (gameController.CheckPlayer(playerCount))
+                SetPlayerDetails(i);
+            }
+            _gameController.InitializePlayers(_players);
+            Console.Clear();
+        }
+
+        private int GetPlayerCount()
+        {
+            int minPlayer = _gameController.MinPlayer;
+            int maxPlayer = _gameController.MaxPlayer;
+
+            while (true)
+            {
+                Console.WriteLine($"Enter the number of players (between {minPlayer} and {maxPlayer}):");
+                if (int.TryParse(Console.ReadLine(), out int playerCount) && playerCount >= minPlayer && playerCount <= maxPlayer)
                 {
-                    InputPlayerNames(playerCount);
+                    return playerCount;
                 }
                 else
                 {
-                    Console.WriteLine($"Invalid number of players. Please enter a number between {gameController.minPlayer} and {gameController.MaxPlayer}.");
-                    InputPlayerCount();
+                    Console.WriteLine($"Number of players must be between {minPlayer} and {maxPlayer}. Please try again.");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Invalid number. Please enter a valid number.");
-                InputPlayerCount();
             }
         }
 
-        public void InputPlayerNames(int playerCount)
+        private void SetPlayerDetails(int playerNumber)
         {
-            for (int i = 1; i <= playerCount; i++)
+            int id = GetPlayerId(playerNumber);
+            string name = GetPlayerName(playerNumber);
+            _players.Add(new Player(id, name));
+        }
+
+        private int GetPlayerId(int playerNumber)
+        {
+            HashSet<int> playerIds = new HashSet<int>(_players.Select(p => p.GetPlayerId()));
+            while (true)
             {
-                Console.WriteLine($"Enter ID for player {i}:");
-                int playerId = int.Parse(Console.ReadLine());
-
-                Console.WriteLine($"Enter name for player {i}:");
-                string playerName = Console.ReadLine();
-
-                players.Add(new Player(playerId, playerName));
+                Console.WriteLine($"Enter ID for player {playerNumber}:");
+                if (int.TryParse(Console.ReadLine(), out int id) && !playerIds.Contains(id))
+                {
+                    return id;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid or duplicate ID. Please enter a unique ID.");
+                }
             }
+        }
 
-            gameController.InitializePlayers(players);
+        private string GetPlayerName(int playerNumber)
+        {
+            while (true)
+            {
+                Console.WriteLine($"Enter name for player {playerNumber}:");
+                string name = Console.ReadLine() ?? string.Empty;
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    return name;
+                }
+                else
+                {
+                    Console.WriteLine("Please input a valid name.");
+                }
+            }
         }
 
         public void DisplayPlayerNames()
         {
             Console.WriteLine("Player names:");
-            foreach (var player in players)
+            foreach (var player in _players)
             {
-                Console.WriteLine($"ID: {player.GetPlayerId()}, Name: {player.GetPlayerName()}");
+                Console.WriteLine($"Player ID: {player.GetPlayerId()}, Name: {player.GetPlayerName()}");
             }
         }
 
         public void DisplayBoard()
         {
-            var board = gameController.GetBoard();
-            var boardArray = board.GetBoard();
+            IBoard board = _gameController.GetBoard();
+            IChessPiece[,] boardArray = board.GetBoard();
             Console.WriteLine("Game Board:");
             for (int row = 0; row < boardArray.GetLength(0); row++)
             {
                 for (int col = 0; col < boardArray.GetLength(1); col++)
                 {
-                    var piece = boardArray[row, col];
-                    if (piece != null)
-                    {
-                        var player = gameController.GetPlayers().FirstOrDefault(p => gameController.GetPlayerPieces(p).Contains(piece));
-                        Console.Write($"[x.{player.GetPlayerId()}.{piece.GetDetail().IdChessPiece}]");
-                    }
-                    else
-                    {
-                        Console.Write("[ ]");
-                    }
-                    Console.Write("\t");
+                    Console.Write(boardArray[row, col] != null ? "[X]" : "[ ]");
                 }
                 Console.WriteLine();
             }
         }
 
-        public async Task PrepPhase()
+
+
+        private void DisplayValidPositions(IPlayer player, IBoard board)
         {
-            foreach (var player in players)
+            int boardMidPoint = board.GetBoard().GetLength(1) / 2;
+            for (int row = 0; row < board.GetBoard().GetLength(0); row++)
             {
-                Console.WriteLine($"Player {player.GetPlayerId()} ({player.GetPlayerName()})'s turn:");
-                Console.WriteLine("Available heroes in the piece store:");
-                var pieceStore = gameController.GetPieceStore(player);
-                if (pieceStore != null)
+                for (int col = 0; col < board.GetBoard().GetLength(1); col++)
                 {
-                    foreach (var piece in pieceStore.GetAllPiece())
+                    bool isPlayer1 = player.GetPlayerId() == 1;
+                    bool isValidColumn = isPlayer1 ? col < boardMidPoint : col >= boardMidPoint;
+
+                    if (isValidColumn && !board.IsBoardOccupied(new Position(row, col)))
                     {
-                        Console.WriteLine($"ID: {piece.GetDetail().IdChessPiece}, Name: {piece.GetDetail().Name}, Price: {piece.GetDetail().Price}");
+                        Console.Write($"( {col}, {row}) ");
                     }
                 }
-                else
+            }
+            Console.WriteLine();
+        }
+
+
+        public void EnterPrepPhase()
+        { 
+            foreach (var player in _players)
+            {
+                Console.WriteLine($"Preparation phase for player {player.GetPlayerName()} (ID: {player.GetPlayerId()})");
+                PlayerData playerData = _gameController.GetPlayerData(player);
+                Console.WriteLine($"Player Health: {playerData.HealthPlayer}");
+                Console.WriteLine($"WinStreak: {playerData.WinStreak}");
+                Console.WriteLine($"LoseStreak: {playerData.LoseStreak}");
+                Console.WriteLine($"Player Coins: {playerData.GetCoins()}");
+                IPieceStore pieceStore = _gameController.GetPieceStore(player);
+                IDeck deck = _gameController.GetPlayerDeck(player);
+                IBoard board = _gameController.GetBoard();
+                
+                pieceStore.RandomizePiece();
+                
+                ProcessBuy(pieceStore, deck, player, board);
+                MovePiecePhase(player, board);
+                DisplayBoard();
+            }
+        }
+
+        private void ProcessBuy(IPieceStore pieceStore, IDeck deck, IPlayer player, IBoard board)
+        {
+            Console.WriteLine("Do you want to buy a piece? (yes/no)");
+            string response = Console.ReadLine().ToLower();
+            if (response == "yes")
+            {
+                Console.WriteLine("Available pieces in the store:");
+                List<IChessPiece> pieces = pieceStore.GetAllPiece();
+                if (pieces.Count == 0)
                 {
                     Console.WriteLine("No pieces available in the store.");
                 }
+                else
+                {
+                    bool continueBuying = true;
+                    while (continueBuying)
+                    {
+                        var pieceToBuy = NotifBuy(pieces, pieceStore, deck);
 
-                // Simulate player actions (e.g., buying pieces, placing pieces on the board)
-                await Task.Delay(30000); // 30 seconds for each player
-                DisplayBoard(); // Display the updated board after each player's turn
+                        SetPosition(player, pieceToBuy, board, deck);
+
+                        continueBuying = ContinueBuying(continueBuying);
+                    }
+                }
+            }
+        }
+
+        private static IChessPiece NotifBuy(List<IChessPiece> pieces, IPieceStore pieceStore, IDeck deck)
+        {
+            var pieceToBuy = PieceToBuy(pieces, pieceStore);
+
+            int price = pieceToBuy.GetDetail().Price;
+            if (pieceStore.BuyPiece(pieceToBuy, price, deck))
+            {
+                Console.WriteLine("Piece bought successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Failed to buy piece.");
+            }
+
+            return pieceToBuy;
+        }
+
+        private static bool ContinueBuying(bool continueBuying)
+        {
+            string response;
+            Console.WriteLine("Do you want to buy another piece? (yes/no)");
+            response = Console.ReadLine().ToLower();
+            if (response != "yes")
+            {
+                continueBuying = false;
+            }
+
+            return continueBuying;
+        }
+
+        private void SetPosition(IPlayer player, IChessPiece pieceToBuy, IBoard board, IDeck deck)
+        {
+            bool validPosition = false;
+            while (!validPosition)
+            {
+                Console.WriteLine("Enter the position to place the piece on the board (row and column):");
+                Console.Write("Row: ");
+                int row = int.Parse(Console.ReadLine());
+                Console.Write("Column: ");
+                int col = int.Parse(Console.ReadLine());
+                var position = new Position(row, col);
+
+                if (_gameController.MovePieceFromDeckToBoard(player, pieceToBuy, board, position, deck))
+                {
+                    Console.WriteLine("Piece placed on the board successfully.");
+                    validPosition = true;
+                }
+                else
+                {
+                    Console.WriteLine("Failed to place piece on the board. Invalid position.");
+                    Console.WriteLine("Valid positions for you are:");
+                    DisplayValidPositions(player, board);
+                }
+            }
+        }
+
+        private static IChessPiece PieceToBuy(List<IChessPiece> pieces, IPieceStore pieceStore)
+        {
+            foreach (IChessPiece piece in pieces)
+            {
+                Detail detail = piece.GetDetail();
+                Console.WriteLine($"Piece ID: {detail.IdChessPiece}, Name: {detail.Name}, Price: {detail.Price}");
+            }
+
+            IChessPiece? pieceToBuy = null;
+            while (pieceToBuy is null)
+            {
+                Console.WriteLine("Enter the ID of the piece you want to buy:");
+                int pieceId = int.Parse(Console.ReadLine());
+                pieceToBuy = pieceStore.GetPiece(pieceId);
+
+                if (pieceToBuy is null)
+                {
+                    Console.WriteLine("Invalid piece ID. Please enter a valid piece ID.");
+                }
+            }
+
+            return pieceToBuy;
+        }
+
+        private void MovePiecePhase(IPlayer player, IBoard board)
+        {
+            Console.WriteLine("Do you want to move a piece? (yes/no)");
+            string movePieceResponse = Console.ReadLine().ToLower();
+            while (movePieceResponse == "yes")
+            {
+                Console.WriteLine("Enter the source position of the piece to move (row and column):");
+                Console.Write("Source Row: ");
+                int sourceRow = int.Parse(Console.ReadLine());
+                Console.Write("Source Column: ");
+                int sourceCol = int.Parse(Console.ReadLine());
+                var sourcePosition = new Position(sourceRow, sourceCol);
+
+                Console.WriteLine("Enter the destination position to move the piece to (row and column):");
+                Console.Write("Destination Row: ");
+                int destRow = int.Parse(Console.ReadLine());
+                Console.Write("Destination Column: ");
+                int destCol = int.Parse(Console.ReadLine());
+                var destPosition = new Position(destRow, destCol);
+
+                IChessPiece pieceToMove = board.GetPiece(sourcePosition);
+                if (pieceToMove != null && _gameController.MovePiece(player, pieceToMove, board, sourcePosition, destPosition))
+                {
+                    Console.WriteLine("Piece moved successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to move piece. Invalid position.");
+                }
+
+                Console.WriteLine("Do you want to move another piece? (yes/no)");
+                movePieceResponse = Console.ReadLine().ToLower();
+            }
+        }
+
+        public void BattlePlayers()
+        {
+            Console.WriteLine("Battle phase:");
+            for (int i = 0; i < _players.Count; i++)
+            {
+                for (int j = i + 1; j < _players.Count; j++)
+                {
+                    IPlayer player1 = _players[i];
+                    IPlayer player2 = _players[j];
+                    Console.WriteLine($"Battle between {player1.GetPlayerName()} (ID: {player1.GetPlayerId()}) and {player2.GetPlayerName()} (ID: {player2.GetPlayerId()})");
+
+                    IPlayer winner = _gameController.PvPBattle(player1, player2);
+
+                    if (winner == player1)
+                    {
+                        Console.WriteLine($"Player {player1.GetPlayerName()} (ID: {player1.GetPlayerId()}) won the battle.");
+                        _gameController.WinRound(player1);
+                        _gameController.DefeatRound(player2);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Player {player2.GetPlayerName()} (ID: {player2.GetPlayerId()}) won the battle.");
+                        _gameController.WinRound(player2);
+                        _gameController.DefeatRound(player1);
+                    }
+
+                    // Introduce a delay of 10 seconds between battles
+                    Task.Delay(10000).Wait();
+                }
+            }
+
+            foreach (var player in _players)
+            {
+                PlayerData playerData = _gameController.GetPlayerData(player);
+                Console.WriteLine($"Player {player.GetPlayerName()} (ID: {player.GetPlayerId()}) health: {playerData.HealthPlayer}");
             }
         }
     }
-}
+

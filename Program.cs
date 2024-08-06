@@ -1,23 +1,33 @@
-﻿// Update Program.cs
+﻿using GameAutoChess.Controller;
 
-using GameAutoChess.Class;
-using GameAutoChess.Display;
-using GameAutoChess.Controller;
-using GameAutoChess.Interface;
-using System.Threading.Tasks;
+namespace GameAutoChess;
 
-namespace GameAutoChess.Program
-{
-    public class Program
+    public static class Program
     {
         public static async Task Main()
         {
             GameController gameController = new GameController();
-            Program_Display display = new Program_Display(gameController);
+            ProgramDisplay display = new ProgramDisplay(gameController);
             display.InputPlayerCount();
             display.DisplayPlayerNames();
             display.DisplayBoard();
-            await display.PrepPhase();
+            
+            bool gameEnded = false;
+            while (!gameEnded)
+            {
+                display.EnterPrepPhase();
+                display.BattlePlayers();
+
+                foreach (var player in gameController.GetPlayers())
+                {
+                    if (gameController.PlayerLose(player))
+                    {
+                        gameEnded = true;
+                        break;
+                    }
+                }
+            }
+
+            Console.WriteLine("Game over. A player has been defeated.");
         }
     }
-}

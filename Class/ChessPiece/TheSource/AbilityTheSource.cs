@@ -16,6 +16,19 @@ public class AbilityTheSource : IAbility
     public IChessPiece chessPiece { get; set; }
     public TheSource theSource { get; set; }
     public List<IChessPiece> ChessPieces { get; set; }
+
+    public AbilityTheSource(int idAbility, AbilityName name, string description, DamageType damageType, AbilityType abilityType, AbilityTarget abilityTarget, int recoveryInterval, int manaRecovery)
+    {
+        IdAbility = idAbility;
+        Name = name;
+        Description = description;
+        DamageType = damageType;
+        AbilityType = abilityType;
+        AbilityTarget = abilityTarget;
+        RecoveryInterval = recoveryInterval;
+        ManaRecovery = manaRecovery;
+    }
+
     public async void ApplyAbility()
     {
         ManaRecovery = 12;
@@ -33,9 +46,33 @@ public class AbilityTheSource : IAbility
             await Task.Delay(RecoveryInterval * 1000);
         }
     }
-  
+
     public void DetailAbility()
     {
-        
+        DamageType = DamageType.MagicalDamage;
+        if (IdAbility == chessPiece.GetDetail().IdChessPiece)
+        {
+            Name = AbilityName.Awaken;
+            Description = "The Source awakens the power of the chess pieces to recover mana.";
+            DamageType = DamageType.MagicalDamage;
+            AbilityType = AbilityType.Passive;
+            AbilityTarget = AbilityTarget.Range;
+
+            switch (chessPiece.GetDetail().Tier)
+            {
+                case TierPiece.OneStar:
+                    RecoveryInterval = 2;
+                    ManaRecovery = 12;
+                    break;
+                case TierPiece.TwoStar:
+                    RecoveryInterval = 2;
+                    ManaRecovery = 18;
+                    break;
+                case TierPiece.ThreeStar:
+                    RecoveryInterval = 2;
+                    ManaRecovery = 24;
+                    break;
+            }
+        }
     }
 }

@@ -8,13 +8,14 @@ public class TheSource : IChessPiece
     public Detail DetailPiece { get; set; }
     public Statistic StatsPiece { get; set; }
     public AbilityTheSource AbilityPiece { get; set; }
-    public Behavior BehaviorPiece { get; set; }
+    public Behavior BehaviorPiece { get; set; } // Ensure this property is present
 
-    public TheSource(Detail detailPiece, Statistic statsPiece, AbilityTheSource abilityPiece)
+    public TheSource(Detail detailPiece, Statistic statsPiece, AbilityTheSource abilityPiece, Behavior behaviorPiece)
     {
         DetailPiece = detailPiece;
         StatsPiece = statsPiece;
         AbilityPiece = abilityPiece;
+        BehaviorPiece = behaviorPiece;
     }
 
     public Position GetPosition()
@@ -96,5 +97,10 @@ public class TheSource : IChessPiece
         {
             DetailPiece.IsAlive = true;
         }
+    }
+
+    public IAbility getAbility()
+    {
+        return AbilityPiece;
     }
 }

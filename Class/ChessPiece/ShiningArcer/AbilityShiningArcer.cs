@@ -57,6 +57,7 @@ public class AbilityShiningArcer : IAbility
     }
     public void DetailAbility()
     {
+        DamageType = DamageType.MagicalDamage;
         if ( IdAbility == chessPiece.GetDetail().IdChessPiece)
         {
             Name = AbilityName.ShootingStar;

@@ -9,12 +9,14 @@ public class TuskChampion : IChessPiece
     public Statistic StatsPiece { get; set; }
     public AbilityTuskChampion AbilityPiece { get; set; }
     public Behavior BehaviorPiece { get; set; }
+    
 
-    public TuskChampion(Detail detailPiece, Statistic statsPiece, AbilityTuskChampion abilityPiece)
+    public TuskChampion(Detail detailPiece, Statistic statsPiece, AbilityTuskChampion abilityPiece, Behavior behaviorPiece)
     {
         DetailPiece = detailPiece;
         StatsPiece = statsPiece;
         AbilityPiece = abilityPiece;
+        BehaviorPiece = behaviorPiece;
     }
 
     public Position GetPosition()
@@ -95,5 +97,10 @@ public class TuskChampion : IChessPiece
         {
             DetailPiece.IsAlive = true;
         }
+    }
+
+    public IAbility getAbility()
+    {
+        return AbilityPiece;
     }
 }

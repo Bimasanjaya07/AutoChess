@@ -9,13 +9,14 @@ public class ShiningArcer : IChessPiece
     public Detail DetailPiece { get; set; }
     public Statistic StatsPiece { get; set; }
     public Behavior BehaviorPiece { get; set; }
-    
 
-    public ShiningArcer(AbilityShiningArcer abilityPiece, Detail detailPiece, Statistic statsPiece)
+
+    public ShiningArcer(AbilityShiningArcer abilityPiece, Detail detailPiece, Statistic statsPiece, Behavior behaviorPiece)
     {
         AbilityPiece = abilityPiece;
         DetailPiece = detailPiece;
         StatsPiece = statsPiece;
+        BehaviorPiece = behaviorPiece;
     }
 
     public Position GetPosition()
@@ -98,5 +99,10 @@ public class ShiningArcer : IChessPiece
         {
             DetailPiece.IsAlive = true;
         }
+    }
+
+    public IAbility getAbility()
+    {
+        return AbilityPiece;
     }
 }
