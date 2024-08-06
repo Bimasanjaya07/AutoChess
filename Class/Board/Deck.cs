@@ -1,3 +1,4 @@
+// Deck.cs
 using GameAutoChess.Interface;
 
 namespace GameAutoChess.Class.Board;
@@ -16,6 +17,7 @@ public class Deck : IDeck
         IdDeck = idDeck;
         MaxSlotPiece = maxSlotPiece;
         ChessPieces = chessPieces;
+        DataPlayer = new PlayerData(idDeck, 0, 100, 0, 0, false); // Initialize DataPlayer
     }
 
     public bool IsDeckFull()

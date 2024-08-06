@@ -1,5 +1,7 @@
-﻿using GameAutoChess.Display;
+﻿// Program.cs
+using GameAutoChess.Display;
 using GameAutoChess.Controller;
+using System.Threading.Tasks;
 
 namespace GameAutoChess.Program
 {
@@ -12,6 +14,7 @@ namespace GameAutoChess.Program
             display.InputPlayerCount();
             display.DisplayPlayerNames();
             display.DisplayBoard();
+            display.EnterPrepPhase();
         }
-    } 
+    }
 }

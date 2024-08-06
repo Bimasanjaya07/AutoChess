@@ -112,7 +112,7 @@ namespace GameAutoChess.Display
             {
                 Console.WriteLine($"Preparation phase for player {player.GetPlayerName()} (ID: {player.GetPlayerId()})");
                 PlayerData playerData = gameController.GetPlayerData(player);
-
+                Console.WriteLine($"Player Health: {playerData.HealthPlayer}");
                 Console.WriteLine($"Player Coins: {playerData.GetCoins()}");
                 IPieceStore pieceStore = gameController.GetPieceStore(player);
                 IDeck deck = gameController.GetPlayerDeck(player);
@@ -177,11 +177,47 @@ namespace GameAutoChess.Display
                             DisplayValidPositions(player, board);
                         }
                     }
+                    MovePiecePhase(player, board);
                 }
-
-                // Display the board after each player's preparation phase
                 DisplayBoard();
             }
         }
+
+        private void MovePiecePhase(IPlayer player, IBoard board)
+        
+        {
+            Console.WriteLine("Do you want to move a piece? (yes/no)");
+            string movePieceResponse = Console.ReadLine().ToLower();
+            while (movePieceResponse == "yes")
+            {
+                Console.WriteLine("Enter the source position of the piece to move (row and column):");
+                Console.Write("Source Row: ");
+                int sourceRow = int.Parse(Console.ReadLine());
+                Console.Write("Source Column: ");
+                int sourceCol = int.Parse(Console.ReadLine());
+                var sourcePosition = new Position(sourceRow, sourceCol);
+
+                Console.WriteLine("Enter the destination position to move the piece to (row and column):");
+                Console.Write("Destination Row: ");
+                int destRow = int.Parse(Console.ReadLine());
+                Console.Write("Destination Column: ");
+                int destCol = int.Parse(Console.ReadLine());
+                var destPosition = new Position(destRow, destCol);
+
+                IChessPiece pieceToMove = board.GetPiece(sourcePosition);
+                if (pieceToMove != null && gameController.MovePiece(player, pieceToMove, board, sourcePosition, destPosition))
+                {
+                    Console.WriteLine("Piece moved successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to move piece. Invalid position.");
+                }
+
+                Console.WriteLine("Do you want to move another piece? (yes/no)");
+                movePieceResponse = Console.ReadLine().ToLower();
+            }
+        }
+        
     }
 }

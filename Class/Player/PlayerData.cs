@@ -1,7 +1,7 @@
+// PlayerData.cs
+
 using GameAutoChess.Class.Board;
 using GameAutoChess.Interface;
-
-namespace GameAutoChess.Class;
 
 public class PlayerData
 {
@@ -24,21 +24,12 @@ public class PlayerData
         WinStreak = winStreak;
         LoseStreak = loseStreak;
         ResultMatchWin = resultMatchWin;
+        ChessPieces = new List<IChessPiece>(); // Initialize the ChessPieces list
     }
 
-    public void RecordMatchResult(bool result)
+    public int GetCoins()
     {
-        ResultMatchWin = result;
-        if (result)
-        {
-            WinStreak++;
-            LoseStreak = 0;
-        }
-        else
-        {
-            LoseStreak++;
-            WinStreak = 0;
-        }
+        return Coins;
     }
 
     public void AddChessPiece(IChessPiece chessPiece)

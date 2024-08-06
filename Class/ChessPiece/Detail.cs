@@ -23,12 +23,11 @@ public class Detail
     public JobsPiece Jobs { get;  }
     public int[] Items { get; set; }
 
-    public Detail(int idChessPiece, string name, string description, Position position, int price, int sell, int maxSlotItem, int itemCount, bool isAlive, bool onBoard, RarityPiece rarity, TierPiece tier, int mana, int maxMana)
+    public Detail(int idChessPiece, string name, string description, int price, int sell, int maxSlotItem, int itemCount, bool isAlive, bool onBoard, RarityPiece rarity, TierPiece tier, int mana, int maxMana)
     {
         IdChessPiece = idChessPiece;
         Name = name;
         Description = description;
-        Position = position;
         Price = price;
         Sell = sell;
         MaxSlotItem = maxSlotItem;

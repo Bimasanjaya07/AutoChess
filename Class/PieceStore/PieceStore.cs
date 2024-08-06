@@ -38,7 +38,7 @@ public class PieceStore : IPieceStore
     }
 
     // PieceStore.cs
-    public bool BuyPiece(IChessPiece piece, int price, Deck deck)
+    public bool BuyPiece(IChessPiece piece, int price, IDeck deck)
     {
         if (piece != null && deck != null && !deck.IsDeckFull())
         {
