@@ -13,7 +13,7 @@ public class GameController
     private readonly Dictionary<IPlayer, PlayerData> _player;
     private readonly List<IChessPiece> _chessPieces;
     private readonly IBoard _boards;
-    public int MaxPlayer = 8;
+    public int MaxPlayer = 2;
     public int MinPlayer = 2;
 
     public GameController()
@@ -23,19 +23,19 @@ public class GameController
         _boards = new Board(new IChessPiece[8, 8], BoardName.JoyfulBeach);
 
         // Create abilities
-        AbilityTheSource abilityTheSource = new AbilityTheSource(1, AbilityName.Awaken, "The Source releases a blast of energy, dealing damage to all enemies", DamageType.MagicalDamage, AbilityType.Active, AbilityTarget.Range, 3, 12);
-        AbilityTuskChampion abilityTuskChampion = new AbilityTuskChampion(2, AbilityName.ArcticPunch, "Tusk Champion punches the enemy with his walrus punch, dealing critical damage", DamageType.PhysicalDamage, AbilityType.Active, AbilityTarget.Single, 3.0M, 100);
-        AbilityShiningArcer abilityShiningArcer = new AbilityShiningArcer(3, AbilityName.ShootingStar, "Shoots a star to the enemy, dealing damage and stunning them", DamageType.MagicalDamage, AbilityType.Active, AbilityTarget.Single, 3, 50, 100, 1, 2);
+        AbilityTheSource abilityTheSource = new AbilityTheSource(1, AbilityName.Awaken, "The Source releases a blast of energy, dealing damage to all enemies", DamageType.MagicalDamage, AbilityType.Active, AbilityTarget.Range, 2, 12);
+        AbilityTuskChampion abilityTuskChampion = new AbilityTuskChampion(2, AbilityName.ArcticPunch, "Tusk Champion punches the enemy with his walrus punch, dealing critical damage", DamageType.PhysicalDamage, AbilityType.Active, AbilityTarget.Single, 300/100M, 6);
+        AbilityShiningArcer abilityShiningArcer = new AbilityShiningArcer(3, AbilityName.ShootingStar, "Shoots a star to the enemy, dealing damage and stunning them", DamageType.MagicalDamage, AbilityType.Active, AbilityTarget.Single, 8, 100, 300, 1, 5);
 
         // Create details
-        Detail detailTheSource = new Detail(1, "The Source", "A mystical being with powerful energy",  1, 4, 1, 0, true, true, RarityPiece.Legendary, TierPiece.OneStar, 0, 100);
-        Detail detailTuskChampion = new Detail(2, "Tusk Champion", "A powerful warrior with a deadly punch",  1, 3, 1, 0, true, true, RarityPiece.Common, TierPiece.OneStar, 0, 100);
-        Detail detailShiningArcer = new Detail(3, "Shining Arcer", "An archer with a stunning shot",  1, 2, 1, 0, true, true, RarityPiece.Rare, TierPiece.OneStar, 0, 100);
+        Detail detailTheSource = new Detail(1, "The Source", "A mystical being with powerful energy",  1, 1, 8, 0, true, true, RarityPiece.Common, TierPiece.OneStar, 0, 100);
+        Detail detailTuskChampion = new Detail(2, "Tusk Champion", "A powerful warrior with a deadly punch",  1, 1, 8, 0, true, true, RarityPiece.Common, TierPiece.OneStar, 0, 100);
+        Detail detailShiningArcer = new Detail(3, "Shining Arcer", "An archer with a stunning shot",  1, 1, 8, 0, true, true, RarityPiece.Common, TierPiece.OneStar, 0, 100);
 
         // Create statistics
-        Statistic statsTheSource = new Statistic(120, 10, 1.0m, 2, 40, 4, 12);
-        Statistic statsTuskChampion = new Statistic(100, 20, 1.5m, 1, 30, 5, 10);
-        Statistic statsShiningArcer = new Statistic(80, 15, 1.2m, 3, 25, 3, 8);
+        Statistic statsTheSource = new Statistic(500, 45, 1.7m, 469, 1, 5, 0);
+        Statistic statsTuskChampion = new Statistic(650, 50, 1.2m, 160, 1, 5, 0);
+        Statistic statsShiningArcer = new Statistic(450, 50, 1.0m, 469, 1, 0, 0);
         
         
         // Create behaviors
@@ -179,29 +179,42 @@ public class GameController
         }
         return pieces;
     }
-   public IPlayer PvPBattle(IPlayer player1, IPlayer player2)
+    public void AttckPiece(IChessPiece attackingPiece, IChessPiece targetPiece)
+    {
+        attackingPiece.Attack(targetPiece);
+    }
+    public IPlayer PvPBattle(IPlayer player1, IPlayer player2)
     {
         ValidatePlayers(player1, player2);
 
-        var player1Pieces = _player[player1].GetChessPieces();
-        var player2Pieces = _player[player2].GetChessPieces();
+        List<IChessPiece> player1Pieces = GetPlayerPieces(player1);
+        List<IChessPiece> player2Pieces = GetPlayerPieces(player2);
 
-        int player1Score = 0;
-        int player2Score = 0;
-
-        for (int i = 0; i < Math.Min(player1Pieces.Count, player2Pieces.Count); i++)
+        foreach (var piece1 in player1Pieces.ToList())
         {
-            var (piece1, piece2) = (player1Pieces[i], player2Pieces[i]);
-
-            var (piece1Damage, piece2Damage) = CalculateDamageForPieces(piece1, piece2);
-
-            UpdatePieceHealth(piece1, piece2Damage);
-            UpdatePieceHealth(piece2, piece1Damage);
-
-            (player1Score, player2Score) = UpdateScores(piece1, piece2, player1Score, player2Score);
+            foreach (var piece2 in player2Pieces.ToList())
+            {
+                AttckPiece(piece1, piece2);
+                if (piece2.GetStatistic().HealthPiece <= 0)
+                {
+                    player2Pieces.Remove(piece2);
+                }
+                if (piece1.GetStatistic().HealthPiece <= 0)
+                {
+                    player1Pieces.Remove(piece1);
+                    break;
+                }
+            }
         }
 
-        return DetermineWinner(player1, player2, player1Score, player2Score);
+        if (player2Pieces.Count == 0)
+        {
+            return player1;
+        }
+        else
+        {
+            return player2;
+        }
     }
 
     private void ValidatePlayers(IPlayer player1, IPlayer player2)
@@ -212,68 +225,7 @@ public class GameController
         }
     }
 
-    private (int piece1Damage, int piece2Damage) CalculateDamageForPieces(IChessPiece piece1, IChessPiece piece2)
-    {
-        return (CalculateDamage(piece1), CalculateDamage(piece2));
-    }
 
-    private void UpdatePieceHealth(IChessPiece piece, int damage)
-    {
-        piece.GetStatistic().HealthPiece -= damage;
-    }
-
-    private (int player1Score, int player2Score) UpdateScores(IChessPiece piece1, IChessPiece piece2, int player1Score, int player2Score)
-    {
-        var (health1, health2) = (piece1.GetStatistic().HealthPiece, piece2.GetStatistic().HealthPiece);
-
-        if (health1 <= 0 && health2 <= 0)
-        {
-            // Both pieces are dead, no score
-        }
-        else if (health1 > 0 && health2 <= 0)
-        {
-            player1Score++;
-        }
-        else if (health1 <= 0 && health2 > 0)
-        {
-            player2Score++;
-        }
-        else
-        {
-            if (health1 > health2)
-            {
-                player1Score++;
-            }
-            else if (health1 < health2)
-            {
-                player2Score++;
-            }
-        }
-
-        return (player1Score, player2Score);
-    }
-
-    private IPlayer DetermineWinner(IPlayer player1, IPlayer player2, int player1Score, int player2Score)
-    {
-        if (player1Score > player2Score)
-        {
-            return player1;
-        }
-        else if (player2Score > player1Score)
-        {
-            return player2;
-        }
-        else
-        {
-            return null; // Draw
-        }
-    }
-
-    private int CalculateDamage(IChessPiece attacker)
-    {
-        // Kalkulasi dasar damage tanpa memperhitungkan armor/magic resistance defender
-        return (int)attacker.GetStatistic().AttackPiece;
-    }
     public async Task<bool> NextRound(IPlayer player)
     {
         if (_player.ContainsKey(player))

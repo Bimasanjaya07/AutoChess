@@ -18,7 +18,7 @@ namespace GameAutoChess;
         public void InputPlayerCount()
         {
             Console.Clear();
-            Console.WriteLine("Welcome to AutoChess. Please input the number of players.");
+            Console.WriteLine("Welcome to AutoChess.");
             int playerCount = GetPlayerCount();
             for (int i = 1; i <= playerCount; i++)
             {
@@ -308,7 +308,7 @@ namespace GameAutoChess;
                     IPlayer player1 = _players[i];
                     IPlayer player2 = _players[j];
                     Console.WriteLine($"Battle between {player1.GetPlayerName()} (ID: {player1.GetPlayerId()}) and {player2.GetPlayerName()} (ID: {player2.GetPlayerId()})");
-
+                    Task.Delay(3000).Wait();
                     IPlayer winner = _gameController.PvPBattle(player1, player2);
 
                     if (winner == player1)
@@ -323,9 +323,6 @@ namespace GameAutoChess;
                         _gameController.WinRound(player2);
                         _gameController.DefeatRound(player1);
                     }
-
-                    // Introduce a delay of 10 seconds between battles
-                    Task.Delay(10000).Wait();
                 }
             }
 
