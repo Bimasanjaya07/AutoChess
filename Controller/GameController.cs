@@ -13,7 +13,7 @@ public class GameController
     private readonly Dictionary<IPlayer, PlayerData> _player;
     private readonly List<IChessPiece> _chessPieces;
     private readonly IBoard _boards;
-    public int MaxPlayer = 2;
+    public int MaxPlayer = 8;
     public int MinPlayer = 2;
 
     public GameController()
@@ -73,7 +73,6 @@ public class GameController
     {
         return playerCount >=MinPlayer && playerCount <= MaxPlayer;
     }
-    // GameController.cs
     public PlayerData GetPlayerData(IPlayer player)
     {
         if (_player.ContainsKey(player))
@@ -91,13 +90,8 @@ public class GameController
     {
         return _player.Keys.ToList();
     }
-
-    public List<IChessPiece> GetChessPieces()
-    {
-        return _chessPieces;
-    }
-
-    public bool PrepPhase(IPlayer player, IChessPiece chessPiece, IBoard board, Position position, IPieceStore pieceStore, int piecePrice, IDeck deck)
+    
+    /*public bool PrepPhase(IPlayer player, IChessPiece chessPiece, IBoard board, Position position, IPieceStore pieceStore, int piecePrice, IDeck deck)
     {
         if (_player.ContainsKey(player))
         {
@@ -116,19 +110,18 @@ public class GameController
             }
         }
         return false;
-    }
+    }*/
 
-    // GameController.cs
     public bool IsValidPositionForPlayer(IPlayer player, Position position)
     {
         int boardMidPoint = _boards.GetBoard().GetLength(1) / 2;
         if (player.GetPlayerId() == 1)
         {
-            return position.Column < boardMidPoint; // Player 1 can place pieces in the left half
+            return position.Column < boardMidPoint; // Player 1 can place pieces in the up half
         }
         else
         {
-            return position.Column >= boardMidPoint; // Other players can place pieces in the right half
+            return position.Column >= boardMidPoint; // Other players can place pieces in the down half
         }
     }
 
@@ -179,7 +172,16 @@ public class GameController
         }
         return pieces;
     }
-    public void AttckPiece(IChessPiece attackingPiece, IChessPiece targetPiece)
+    
+    
+    private void ValidatePlayers(IPlayer player1, IPlayer player2)
+    {
+        if (!_player.ContainsKey(player1) && !_player.ContainsKey(player2))
+        {
+            throw new ArgumentException("Player tidak ditemukan.");
+        }
+    }
+    public void AttackPiece(IChessPiece attackingPiece, IChessPiece targetPiece)
     {
         attackingPiece.Attack(targetPiece);
     }
@@ -194,7 +196,7 @@ public class GameController
         {
             foreach (var piece2 in player2Pieces.ToList())
             {
-                AttckPiece(piece1, piece2);
+                AttackPiece(piece1, piece2);
                 if (piece2.GetStatistic().HealthPiece <= 0)
                 {
                     player2Pieces.Remove(piece2);
@@ -207,25 +209,15 @@ public class GameController
             }
         }
 
-        if (player2Pieces.Count == 0)
-        {
-            return player1;
-        }
-        else
+        if (player1Pieces.Count <= 0)
         {
             return player2;
         }
-    }
-
-    private void ValidatePlayers(IPlayer player1, IPlayer player2)
-    {
-        if (!_player.ContainsKey(player1) || !_player.ContainsKey(player2))
+        else
         {
-            throw new ArgumentException("Player tidak ditemukan.");
+            return player1;
         }
     }
-
-
     public async Task<bool> NextRound(IPlayer player)
     {
         if (_player.ContainsKey(player))
