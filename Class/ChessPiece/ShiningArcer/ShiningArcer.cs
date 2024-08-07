@@ -49,16 +49,12 @@ public class ShiningArcer : IChessPiece
         StatsPiece = stats;
     }
 
-    public async void Attack(IChessPiece targetPiece)
+    public void Attack(IChessPiece targetPiece)
     {
-        while (targetPiece.GetStatistic().HealthPiece > 0 && StatsPiece.HealthPiece > 0)
-        {
-            targetPiece.GetStatistic().HealthPiece -= StatsPiece.AttackPiece;
-            ManaRegen();
-            CheckAndActivateAbility();
-            BehaviorPiece.ApplyBehavior();
-            await Task.Delay(3000);
-        }
+        targetPiece.GetStatistic().HealthPiece -= StatsPiece.AttackPiece;
+        ManaRegen();
+        CheckAndActivateAbility();
+        BehaviorPiece.ApplyBehavior();
     }
 
     public void Attacked(IChessPiece attackingPiece)

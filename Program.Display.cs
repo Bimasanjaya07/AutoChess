@@ -18,7 +18,7 @@ namespace GameAutoChess;
         public void InputPlayerCount()
         {
             Console.Clear();
-            Console.WriteLine("Welcome to AutoChess. Please input the number of players.");
+            Console.WriteLine("Welcome to AutoChess.");
             int playerCount = GetPlayerCount();
             for (int i = 1; i <= playerCount; i++)
             {
@@ -30,19 +30,16 @@ namespace GameAutoChess;
 
         private int GetPlayerCount()
         {
-            int minPlayer = _gameController.MinPlayer;
-            int maxPlayer = _gameController.MaxPlayer;
-
             while (true)
             {
-                Console.WriteLine($"Enter the number of players (between {minPlayer} and {maxPlayer}):");
-                if (int.TryParse(Console.ReadLine(), out int playerCount) && playerCount >= minPlayer && playerCount <= maxPlayer)
+                Console.WriteLine($"Enter the number of players (between {_gameController.MinPlayer} and {_gameController.MaxPlayer}):");
+                if (int.TryParse(Console.ReadLine(), out int playerCount) && playerCount >= _gameController.MinPlayer && playerCount <= _gameController.MaxPlayer)
                 {
                     return playerCount;
                 }
                 else
                 {
-                    Console.WriteLine($"Number of players must be between {minPlayer} and {maxPlayer}. Please try again.");
+                    Console.WriteLine($"Number of players must be between {_gameController.MinPlayer} and {_gameController.MaxPlayer}. Please try again.");
                 }
             }
         }
@@ -56,7 +53,7 @@ namespace GameAutoChess;
 
         private int GetPlayerId(int playerNumber)
         {
-            HashSet<int> playerIds = new HashSet<int>(_players.Select(p => p.GetPlayerId()));
+            List<int> playerIds = _players.Select(p => p.GetPlayerId()).ToList();
             while (true)
             {
                 Console.WriteLine($"Enter ID for player {playerNumber}:");
@@ -124,9 +121,9 @@ namespace GameAutoChess;
                     bool isPlayer1 = player.GetPlayerId() == 1;
                     bool isValidColumn = isPlayer1 ? col < boardMidPoint : col >= boardMidPoint;
 
-                    if (isValidColumn && !board.IsBoardOccupied(new Position(row, col)))
+                    if (isValidColumn && !board.IsBoardOccupied(new Position(col, row)))
                     {
-                        Console.Write($"( {col}, {row}) ");
+                        Console.Write($"( Col : {col}, Row : {row}) ");
                     }
                 }
             }
@@ -138,12 +135,16 @@ namespace GameAutoChess;
         { 
             foreach (var player in _players)
             {
+                Console.WriteLine("");
                 Console.WriteLine($"Preparation phase for player {player.GetPlayerName()} (ID: {player.GetPlayerId()})");
+                Console.WriteLine("");
                 PlayerData playerData = _gameController.GetPlayerData(player);
                 Console.WriteLine($"Player Health: {playerData.HealthPlayer}");
                 Console.WriteLine($"WinStreak: {playerData.WinStreak}");
                 Console.WriteLine($"LoseStreak: {playerData.LoseStreak}");
                 Console.WriteLine($"Player Coins: {playerData.GetCoins()}");
+                Console.WriteLine("");
+
                 IPieceStore pieceStore = _gameController.GetPieceStore(player);
                 IDeck deck = _gameController.GetPlayerDeck(player);
                 IBoard board = _gameController.GetBoard();
@@ -158,9 +159,9 @@ namespace GameAutoChess;
 
         private void ProcessBuy(IPieceStore pieceStore, IDeck deck, IPlayer player, IBoard board)
         {
-            Console.WriteLine("Do you want to buy a piece? (yes/no)");
+            Console.WriteLine("Do you want to buy a piece? (y/n)");
             string response = Console.ReadLine().ToLower();
-            if (response == "yes")
+            if (response == "y")
             {
                 Console.WriteLine("Available pieces in the store:");
                 List<IChessPiece> pieces = pieceStore.GetAllPiece();
@@ -203,9 +204,9 @@ namespace GameAutoChess;
         private static bool ContinueBuying(bool continueBuying)
         {
             string response;
-            Console.WriteLine("Do you want to buy another piece? (yes/no)");
+            Console.WriteLine("Do you want to buy another piece? (y/n)");
             response = Console.ReadLine().ToLower();
-            if (response != "yes")
+            if (response != "y")
             {
                 continueBuying = false;
             }
@@ -223,7 +224,7 @@ namespace GameAutoChess;
                 int row = int.Parse(Console.ReadLine());
                 Console.Write("Column: ");
                 int col = int.Parse(Console.ReadLine());
-                var position = new Position(row, col);
+                var position = new Position(col ,row);
 
                 if (_gameController.MovePieceFromDeckToBoard(player, pieceToBuy, board, position, deck))
                 {
@@ -265,9 +266,9 @@ namespace GameAutoChess;
 
         private void MovePiecePhase(IPlayer player, IBoard board)
         {
-            Console.WriteLine("Do you want to move a piece? (yes/no)");
+            Console.WriteLine("Do you want to move a piece? (y/n)");
             string movePieceResponse = Console.ReadLine().ToLower();
-            while (movePieceResponse == "yes")
+            while (movePieceResponse == "y")
             {
                 Console.WriteLine("Enter the source position of the piece to move (row and column):");
                 Console.Write("Source Row: ");
@@ -300,6 +301,7 @@ namespace GameAutoChess;
 
         public void BattlePlayers()
         {
+            Console.WriteLine("");
             Console.WriteLine("Battle phase:");
             for (int i = 0; i < _players.Count; i++)
             {
@@ -308,7 +310,9 @@ namespace GameAutoChess;
                     IPlayer player1 = _players[i];
                     IPlayer player2 = _players[j];
                     Console.WriteLine($"Battle between {player1.GetPlayerName()} (ID: {player1.GetPlayerId()}) and {player2.GetPlayerName()} (ID: {player2.GetPlayerId()})");
-
+                    Console.WriteLine("");
+                    
+                    Task.Delay(3000).Wait();
                     IPlayer winner = _gameController.PvPBattle(player1, player2);
 
                     if (winner == player1)
@@ -323,9 +327,6 @@ namespace GameAutoChess;
                         _gameController.WinRound(player2);
                         _gameController.DefeatRound(player1);
                     }
-
-                    // Introduce a delay of 10 seconds between battles
-                    Task.Delay(10000).Wait();
                 }
             }
 
@@ -333,6 +334,8 @@ namespace GameAutoChess;
             {
                 PlayerData playerData = _gameController.GetPlayerData(player);
                 Console.WriteLine($"Player {player.GetPlayerName()} (ID: {player.GetPlayerId()}) health: {playerData.HealthPlayer}");
+             
+
             }
         }
     }
