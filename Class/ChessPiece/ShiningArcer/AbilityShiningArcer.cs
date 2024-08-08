@@ -5,7 +5,7 @@ namespace GameAutoChess.Class.ChessPiece.PieceName;
 
 public class AbilityShiningArcer : IAbility
 {
-    public int IdAbility { get; set; }
+    public int Id { get; set; }
     public AbilityName Name { get; set; }
     public string Description { get; set; }
     public DamageType DamageType { get; set; }
@@ -20,9 +20,9 @@ public class AbilityShiningArcer : IAbility
     public IChessPiece chessPiece { get; set; }
     public ShiningArcer shiningArcer { get; set; }
 
-    public AbilityShiningArcer(int idAbility, AbilityName name, string description, DamageType damageType, AbilityType abilityType, AbilityTarget abilityTarget, int cooldown, int miniDamage, int maxDamage, decimal miniStunDuration, decimal maxStunDuration)
+    public AbilityShiningArcer(int id, AbilityName name, string description, DamageType damageType, AbilityType abilityType, AbilityTarget abilityTarget, int cooldown, int miniDamage, int maxDamage, decimal miniStunDuration, decimal maxStunDuration)
     {
-        IdAbility = idAbility;
+        Id = id;
         Name = name;
         Description = description;
         DamageType = damageType;
@@ -58,7 +58,7 @@ public class AbilityShiningArcer : IAbility
     public void DetailAbility()
     {
         DamageType = DamageType.MagicalDamage;
-        if ( IdAbility == chessPiece.GetDetail().IdChessPiece)
+        if ( Id == chessPiece.GetDetail().IdChessPiece)
         {
             Name = AbilityName.ShootingStar;
             Description = "Shining Archer shoots Shooting Star to deal damage to the farthest enemy and stun them.";

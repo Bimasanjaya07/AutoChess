@@ -8,10 +8,10 @@ public class ShiningArcer : IChessPiece
     public AbilityShiningArcer AbilityPiece { get; set; }
     public Detail DetailPiece { get; set; }
     public Statistic StatsPiece { get; set; }
-    public Behavior BehaviorPiece { get; set; }
+    public IPieceBehavior BehaviorPiece { get; set; }
 
 
-    public ShiningArcer(AbilityShiningArcer abilityPiece, Detail detailPiece, Statistic statsPiece, Behavior behaviorPiece)
+    public ShiningArcer(AbilityShiningArcer abilityPiece, Detail detailPiece, Statistic statsPiece, IPieceBehavior behaviorPiece)
     {
         AbilityPiece = abilityPiece;
         DetailPiece = detailPiece;

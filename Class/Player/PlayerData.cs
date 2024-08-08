@@ -11,7 +11,6 @@ public class PlayerData
     public int WinStreak { get; set; }
     public int LoseStreak { get; set; }
     public bool ResultMatchWin { get; set; }
-    public int[] InventoryItem { get; set; }
     public List<IChessPiece> ChessPieces { get; set; }
     public IPieceStore PieceStore { get; set; }
     public Deck Deck { get; set; }

@@ -8,16 +8,16 @@ using GameAutoChess.Interface;
 namespace GameAutoChess.Class.PieceStore;
 public class PieceStore : IPieceStore
 {
-    public int IdPieceStore { get; set; }
+    public int Id { get; set; }
     public int PriceRefreshStore { get; set; }
     public PlayerData CoinPlayer { get; set; }
     public List<IChessPiece> ListChessPiece { get; set; }
     public RarityPiece Rarity { get; set; }
     private List<IChessPiece> _allPieces;
 
-    public PieceStore(int idPieceStore, int priceRefreshStore, List<IChessPiece> listChessPiece, PlayerData coinPlayer, List<IChessPiece> allPieces)
+    public PieceStore(int id, int priceRefreshStore, List<IChessPiece> listChessPiece, PlayerData coinPlayer, List<IChessPiece> allPieces)
     {
-        IdPieceStore = idPieceStore;
+        Id = id;
         PriceRefreshStore = priceRefreshStore;
         ListChessPiece = listChessPiece;
         CoinPlayer = coinPlayer;
@@ -70,7 +70,7 @@ public class PieceStore : IPieceStore
 
     public int GetPieceSToreId()
     {
-        return IdPieceStore;
+        return Id;
     }
     
     public List<IChessPiece> RandomizePiece()

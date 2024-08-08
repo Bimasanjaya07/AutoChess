@@ -6,7 +6,8 @@ using GameAutoChess.Class.ChessPiece;
 
 public class Deck : IDeck
 {
-    public int IdDeck { get; }
+    // only id
+    public int Id{ get; }
     public int MaxSlotPiece { get; }
     public IChessPiece ChessPiece { get; set; }
     public List<IChessPiece> ChessPieces { get; set; }
@@ -14,7 +15,7 @@ public class Deck : IDeck
 
     public Deck(int idDeck, int maxSlotPiece, List<IChessPiece> chessPieces)
     {
-        IdDeck = idDeck;
+        Id = idDeck;
         MaxSlotPiece = maxSlotPiece;
         ChessPieces = chessPieces;
         DataPlayer = new PlayerData(idDeck, 0, 100, 0, 0, false); // Initialize DataPlayer
@@ -89,7 +90,7 @@ public class Deck : IDeck
     }
     public int GetDeckId()
     {
-        return IdDeck;
+        return Id;
     }
     public List<IChessPiece> GetAllPiece()
     {

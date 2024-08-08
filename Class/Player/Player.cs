@@ -3,24 +3,24 @@ using GameAutoChess.Interface;
 
 public class Player : IPlayer
 {
-    public int IdPlayer { get; set; }
+    public int Id { get; set; }
     public string NamePlayer { get; set; }
     
-    public Player(int idPlayer, string namePlayer)
+    public Player(int id, string namePlayer)
     
     {
-        IdPlayer = idPlayer;
+        Id = id;
         NamePlayer = namePlayer;
     }
 
-    public Player(int idPlayer)
+    public Player(int id)
     {
-        IdPlayer = idPlayer;
+        Id = id;
     }
 
     public int GetPlayerId()
     {
-        return IdPlayer;
+        return Id;
     }
     public string GetPlayerName()
     {

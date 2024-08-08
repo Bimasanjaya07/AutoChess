@@ -7,7 +7,8 @@ namespace GameAutoChess;
 
     public class ProgramDisplay
     {
-        private readonly List<IPlayer> _players  = new List<IPlayer>();
+        // players minta ke controllers
+        private readonly List<IPlayer> _players  = new List<IPlayer>(); // hapus
         private readonly GameController _gameController;
 
         public ProgramDisplay(GameController controller)
@@ -183,7 +184,7 @@ namespace GameAutoChess;
                 }
             }
         }
-
+        // perintah ke game controller untuk proses pembelian
         private static IChessPiece NotifBuy(List<IChessPiece> pieces, IPieceStore pieceStore, IDeck deck)
         {
             var pieceToBuy = PieceToBuy(pieces, pieceStore);
@@ -275,14 +276,14 @@ namespace GameAutoChess;
                 int sourceRow = int.Parse(Console.ReadLine());
                 Console.Write("Source Column: ");
                 int sourceCol = int.Parse(Console.ReadLine());
-                var sourcePosition = new Position(sourceRow, sourceCol);
+                var sourcePosition = new Position(sourceCol, sourceRow);
 
                 Console.WriteLine("Enter the destination position to move the piece to (row and column):");
                 Console.Write("Destination Row: ");
                 int destRow = int.Parse(Console.ReadLine());
                 Console.Write("Destination Column: ");
                 int destCol = int.Parse(Console.ReadLine());
-                var destPosition = new Position(destRow, destCol);
+                var destPosition = new Position(destCol, destRow);
 
                 IChessPiece pieceToMove = board.GetPiece(sourcePosition);
                 if (pieceToMove != null && _gameController.MovePiece(player, pieceToMove, board, sourcePosition, destPosition))
