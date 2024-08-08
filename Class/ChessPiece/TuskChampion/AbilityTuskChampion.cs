@@ -5,7 +5,7 @@ namespace GameAutoChess.Class.ChessPiece.PieceName;
 
 public class AbilityTuskChampion : IAbility
 {
-    public int IdAbility { get; set; }
+    public int Id { get; set; }
     public AbilityName Name { get; set; }
     public string Description { get; set; }
     public DamageType DamageType { get; set; }
@@ -17,9 +17,9 @@ public class AbilityTuskChampion : IAbility
     public TuskChampion tuskChampion { get; set; }
     public IChessPiece chessPiece { get; set; }
 
-    public AbilityTuskChampion(int idAbility, AbilityName name, string description, DamageType damageType, AbilityType abilityType, AbilityTarget abilityTarget, decimal lethalBlowDamage, int cooldown)
+    public AbilityTuskChampion(int id, AbilityName name, string description, DamageType damageType, AbilityType abilityType, AbilityTarget abilityTarget, decimal lethalBlowDamage, int cooldown)
     {
-        IdAbility = idAbility;
+        Id = id;
         Name = name;
         Description = description;
         DamageType = damageType;
@@ -42,7 +42,7 @@ public class AbilityTuskChampion : IAbility
     public void DetailAbility()
     {
         DamageType = DamageType.PhysicalDamage;
-        if (IdAbility == chessPiece.GetDetail().IdChessPiece)
+        if (Id == chessPiece.GetDetail().IdChessPiece)
         {
             Name = AbilityName.ArcticPunch;
             Description =

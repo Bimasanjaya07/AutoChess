@@ -39,9 +39,9 @@ public class GameController
         
         
         // Create behaviors
-        Behavior behaviorTheSource = new Behavior { JobsPiece = JobsPiece.Mage, StatisticPiece = statsTheSource };
-        Behavior behaviorTuskChampion = new Behavior { JobsPiece = JobsPiece.Warrior, StatisticPiece = statsTuskChampion };
-        Behavior behaviorShiningArcer = new Behavior { JobsPiece = JobsPiece.Hunter, StatisticPiece = statsShiningArcer };
+        IPieceBehavior behaviorTheSource = new BehaviorTheSource();
+        IPieceBehavior behaviorTuskChampion = new BehaviorTuskChampion();
+        IPieceBehavior behaviorShiningArcer = new BehaviorShiningArcer();
         
         // Create chess pieces
         IChessPiece theSource = new TheSource(detailTheSource, statsTheSource, abilityTheSource, behaviorTheSource);
@@ -90,27 +90,6 @@ public class GameController
     {
         return _player.Keys.ToList();
     }
-    
-    /*public bool PrepPhase(IPlayer player, IChessPiece chessPiece, IBoard board, Position position, IPieceStore pieceStore, int piecePrice, IDeck deck)
-    {
-        if (_player.ContainsKey(player))
-        {
-            bool buyPiece = pieceStore.BuyPiece(chessPiece, piecePrice, deck);
-            if (buyPiece)
-            {
-                _chessPieces.Add(chessPiece);
-            }
-
-            if (_chessPieces.Contains(chessPiece) && !board.IsBoardOccupied(position))
-            {
-                _player[player].AddChessPiece(chessPiece);
-                _chessPieces.Remove(chessPiece);
-                board.SetPieceFromDeck(chessPiece, deck, position);
-                return true;
-            }
-        }
-        return false;
-    }*/
 
     public bool IsValidPositionForPlayer(IPlayer player, Position position)
     {
@@ -191,7 +170,7 @@ public class GameController
 
         List<IChessPiece> player1Pieces = GetPlayerPieces(player1);
         List<IChessPiece> player2Pieces = GetPlayerPieces(player2);
-
+        // reafctor optional
         foreach (var piece1 in player1Pieces.ToList())
         {
             foreach (var piece2 in player2Pieces.ToList())
@@ -213,10 +192,7 @@ public class GameController
         {
             return player2;
         }
-        else
-        {
-            return player1;
-        }
+        return player1;
     }
     public async Task<bool> NextRound(IPlayer player)
     {

@@ -6,14 +6,14 @@ namespace GameAutoChess.Class.Item;
 
 public class LifeCrystal : IItem
 {
-    public int IdItem { get; set; }
+    public int Id { get; set; }
     public ItemName Name { get; set; }
     public string Description { get; set; }
     public Statistic Stats { get; set; }
 
-    public LifeCrystal(int idItem, ItemName name, string description, Statistic stats)
+    public LifeCrystal(int id, ItemName name, string description, Statistic stats)
     {
-        IdItem = idItem;
+        Id = id;
         Name = name;
         Description = description;
         Stats = stats;

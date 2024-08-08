@@ -8,9 +8,9 @@ public class TheSource : IChessPiece
     public Detail DetailPiece { get; set; }
     public Statistic StatsPiece { get; set; }
     public AbilityTheSource AbilityPiece { get; set; }
-    public Behavior BehaviorPiece { get; set; } // Ensure this property is present
+    public IPieceBehavior BehaviorPiece { get; set; } // Ensure this property is present
 
-    public TheSource(Detail detailPiece, Statistic statsPiece, AbilityTheSource abilityPiece, Behavior behaviorPiece)
+    public TheSource(Detail detailPiece, Statistic statsPiece, AbilityTheSource abilityPiece, IPieceBehavior behaviorPiece)
     {
         DetailPiece = detailPiece;
         StatsPiece = statsPiece;

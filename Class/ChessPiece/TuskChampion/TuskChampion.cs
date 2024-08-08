@@ -8,10 +8,10 @@ public class TuskChampion : IChessPiece
     public Detail DetailPiece { get; set; }
     public Statistic StatsPiece { get; set; }
     public AbilityTuskChampion AbilityPiece { get; set; }
-    public Behavior BehaviorPiece { get; set; }
+    public IPieceBehavior BehaviorPiece { get; set; }
     
 
-    public TuskChampion(Detail detailPiece, Statistic statsPiece, AbilityTuskChampion abilityPiece, Behavior behaviorPiece)
+    public TuskChampion(Detail detailPiece, Statistic statsPiece, AbilityTuskChampion abilityPiece, IPieceBehavior behaviorPiece)
     {
         DetailPiece = detailPiece;
         StatsPiece = statsPiece;

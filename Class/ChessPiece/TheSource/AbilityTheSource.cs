@@ -5,7 +5,7 @@ namespace GameAutoChess.Class.ChessPiece.PieceName;
 
 public class AbilityTheSource : IAbility
 {
-    public int IdAbility { get; set; }
+    public int Id { get; set; }
     public AbilityName Name { get; set; }
     public string Description { get; set; }
     public DamageType DamageType { get; set; }
@@ -17,9 +17,9 @@ public class AbilityTheSource : IAbility
     public TheSource theSource { get; set; }
     public List<IChessPiece> ChessPieces { get; set; }
 
-    public AbilityTheSource(int idAbility, AbilityName name, string description, DamageType damageType, AbilityType abilityType, AbilityTarget abilityTarget, int recoveryInterval, int manaRecovery)
+    public AbilityTheSource(int id, AbilityName name, string description, DamageType damageType, AbilityType abilityType, AbilityTarget abilityTarget, int recoveryInterval, int manaRecovery)
     {
-        IdAbility = idAbility;
+        Id = id;
         Name = name;
         Description = description;
         DamageType = damageType;
@@ -50,7 +50,7 @@ public class AbilityTheSource : IAbility
     public void DetailAbility()
     {
         DamageType = DamageType.MagicalDamage;
-        if (IdAbility == chessPiece.GetDetail().IdChessPiece)
+        if (Id == chessPiece.GetDetail().IdChessPiece)
         {
             Name = AbilityName.Awaken;
             Description = "The Source awakens the power of the chess pieces to recover mana.";
